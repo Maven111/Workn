@@ -1,0 +1,89 @@
+﻿COMMAND: 
+Search my codebase (the login page with the design system) for raw colour values.
+
+
+
+
+FULL OUTPUT:
+Detailed Occurrences
+
+
+1. 
+style.css
+ (17 occurrences)
+All component colours (surfaces, text, borders, buttons) use semantic var(--color-*) tokens. The raw rgba() values occur in three categories:
+
+
+A. Hero Backdrop Gradients & Pattern (Lines 72–82)
+
+
+style.css:L72
+: radial-gradient(circle at 10% 20%, rgba(75, 201, 107, 0.28) 0%, transparent 50%)
+
+
+style.css:L73
+: radial-gradient(circle at 90% 80%, rgba(22, 101, 52, 0.45) 0%, transparent 60%)
+
+
+style.css:L82
+: background-image: radial-gradient(rgba(245, 255, 243, 0.08) 1px, transparent 1px)
+B. Hero Overlay Opacities & Badges (Lines 111–196)
+
+
+style.css:L111
+: box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15)
+
+
+style.css:L133
+: background-color: rgba(245, 255, 243, 0.12)
+
+
+style.css:L134
+: border: 1px solid rgba(245, 255, 243, 0.2)
+
+
+style.css:L162
+: color: rgba(245, 255, 243, 0.85)
+
+
+style.css:L173
+: border-top: 1px solid rgba(245, 255, 243, 0.15)
+
+
+style.css:L190
+: color: rgba(245, 255, 243, 0.7)
+
+
+style.css:L196
+: color: rgba(245, 255, 243, 0.6)
+C. Custom Focus Rings, Glows, and Button Shadows (Lines 365–508)
+
+
+style.css:L365
+: box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) (input focus ring)
+
+
+
+
+style.css:L375
+: box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.12) (error input ring)
+
+
+style.css:L462
+: box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2) (checkbox focus ring)
+
+
+style.css:L483
+: box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25) (primary button shadow)
+
+
+style.css:L491
+: box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35) (primary button hover shadow)
+
+
+style.css:L496
+: box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25) (primary button active shadow)
+
+
+style.css:L508
+: border: 2.5px solid rgba(255, 255, 255, 0.35) (spinner track).
