@@ -1,0 +1,63 @@
+﻿Step 1: Project & Package Setup
+
+
+Initialize a clean Next.js + TypeScript project directly in the workspace root (./) without creating a nested project directory.
+Configure package.json, tsconfig.json, and next.config.ts.
+Install baseline dependencies: next, react, react-dom, typescript, @types/react, @types/node, tailwindcss, postcss, autoprefixer.
+
+
+Step 2: Folder Structure Scaffolding
+Scaffold the baseline architecture per 
+
+
+.agent/rules/Structure.md
+ (only what is needed for the foundation):
+
+
+text
+src/
+├── app/
+│   ├── layout.tsx       # Root layout configuring fonts and tokens
+│   ├── page.tsx         # Minimal 100vh home screen
+│   └── globals.css      # Base CSS importing tokens.css and Tailwind directives
+├── components/
+│   ├── layout/          # Base layout wrappers
+│   └── ui/              # Fundamental primitives
+├── lib/
+│   └── utils/           # Minimal class merging utility (cn)
+├── types/               # Global type definitions
+public/                  # Static assets
+
+
+Step 3: Design System Integration
+Ensure tokens.css is connected to src/app/globals.css.
+
+
+Configure tailwind.config.ts to map theme colors directly to the CSS variable color roles (primary, surface, on-surface, outline, etc.) and typography font families (Space Grotesk, Manrope).
+Load Google Fonts (Space Grotesk and Manrope) in src/app/layout.tsx.
+
+
+Step 4: Base Layout & Minimal 100vh Home Screen
+src/app/layout.tsx:
+Semantic HTML5 structure (html, body), SEO metadata (title, meta description).
+Strict application of --color-surface and --color-on-surface.
+src/app/page.tsx (Home Screen):
+Exactly 100vh (h-screen overflow-hidden flex flex-col justify-between).
+Clean, centered brand presentation:
+Workn logo mark and brand identifier.
+Headline in Space Grotesk (--type-headline-large).
+Subtitle in Manrope (--type-body-large).
+Foundation status badge using semantic container tokens (--color-surface-container-high and --color-primary).
+Zero forms, inputs, buttons, authentication flows, or database queries.
+
+
+Step 5: Verification & Self-Audit
+
+
+Execute a codebase-wide regex search across all created files for hard-coded hex (#...), rgba(...), or non-token inline styling.
+Verify that only semantic color roles (--color-*) are consumed.
+Validate that the viewport height is exactly 100vh.
+Produce the Final Report with:
+List of created files and paths.
+Exact assumptions logged.
+Compliance self-audit checklist.
