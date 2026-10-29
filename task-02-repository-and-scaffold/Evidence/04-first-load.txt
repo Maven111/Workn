@@ -1,0 +1,6 @@
+﻿- Local:        http://localhost:3000
+○ Compiling / ...
+ ✓ Compiled / in 8.1s (482 modules).
+
+
+ GET / 200 in 8740ms.
