@@ -1,0 +1,15 @@
+﻿Microsoft Windows [Version 10.0.26200.9711]
+(c) Microsoft Corporation. All rights reserved.
+
+
+C:\Users\man\Desktop\Workn>npm run dev
+
+
+> workn@0.1.0 dev
+> next dev
+
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+ ✓ Starting...
+ ✓ Ready in 3.5s.
