@@ -1,0 +1,7 @@
+﻿POST /login?redirect=%2Fdashboard 303 in 745ms
+ POST /login?redirect=%2Fdashboard 303 in 84ms
+ POST /login?redirect=%2Fdashboard 303 in 136ms
+ POST /login?redirect=%2Fdashboard 303 in 82ms
+ POST /login?redirect=%2Fdashboard 303 in 88ms
+ POST /register 200 in 1404ms
+ POST /register 200 in 1360ms
