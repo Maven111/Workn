@@ -1,0 +1,106 @@
+﻿Phase 2 Scaffold Prompt: Build Foundation Complete
+The foundation for Workn has been built strictly adhering to the design tokens and structural rules. No product features, forms, authentication logic, database queries, or extra pages have been introduced.
+
+
+1. Files Created:
+
+
+package.json
+: Defines the Next.js 14, React 18, TypeScript, and Tailwind CSS dependencies and scripts.
+
+
+
+
+tsconfig.json
+: TypeScript configuration with strict mode, Next.js plugins, and @/* path alias mapping.
+
+
+
+
+next.config.mjs
+: Minimal Next.js configuration enabling React strict mode.
+
+
+
+
+postcss.config.js
+: PostCSS configuration loading Tailwind CSS and Autoprefixer.
+
+
+
+
+tailwind.config.ts
+: Tailwind configuration mapping themes strictly to design token CSS variables (semantic color roles, fonts, spacing, radius, and shadows).
+
+
+
+
+.gitignore
+: Git ignore rules for Next.js, node_modules, and local environment files.
+
+
+
+
+.env.example
+: Environment variable template documenting database, Supabase, AI, and payment placeholders.
+
+
+
+
+src/app/globals.css
+: Global CSS importing tokens.css, Tailwind directives, and baseline body styles.
+
+
+
+
+src/app/layout.tsx
+: Root layout loading Google Fonts (Space Grotesk and Manrope) and applying base semantic surface tokens.
+
+
+
+
+src/app/page.tsx
+: Minimal foundation home screen locked to exactly 100vh (h-screen overflow-hidden) styled purely with design token classes.
+
+
+
+
+src/lib/utils/cn.ts
+: Utility function for conditional class name merging via clsx and tailwind-merge.
+
+
+
+
+src/types/index.ts
+: Global TypeScript type definitions baseline.
+
+
+
+
+scripts/build-tokens.js
+ (updated): Enhanced to compile the approved --space-* and --radius-* tokens into 
+
+
+tokens.css
+
+
+
+
+
+
+2. Assumptions
+Zero unauthorized assumptions were made.
+All architectural requirements (Next.js App Router, TypeScript, Tailwind CSS) were drawn directly from 
+
+
+Docs/Workn-PRD.md
+, 
+
+
+Agent.md
+, and 
+
+
+.agent/rules/Structure.md
+.
+The spacing scale (8pt/4pt modular system) and corner radius scale were explicitly designed and approved by you in the previous turn before code was written.

@@ -1,0 +1,83 @@
+﻿PROMPT:
+Which typography did you use for the headline and subheadline section of the login page (the one you used my colour system)
+
+
+
+
+OUTPUT: 
+In the design system login page (
+style.css
+ and 
+login.html
+), the typography used for the headline and subheadline sections is Manrope (inherited from --type-body-large-font-family in 
+
+
+tokens.css
+).
+
+
+Here is the exact breakdown for both sections:
+
+
+1. Form Card Header (Right Panel)
+Located in 
+
+
+style.css:L259-270
+:
+
+
+Headline (.form-title — "Welcome back"):
+
+
+Font Family: Manrope, sans-serif
+Font Size: 1.85rem (~29.6px, matching the --type-headline-medium scale of 28px)
+Font Weight: 800 (ExtraBold)
+Letter Spacing: -0.03em
+Color Role: var(--color-on-surface)
+Subheadline (.form-subtitle — "Enter your workspace credentials..."):
+
+
+Font Family: Manrope, sans-serif
+Font Size: 0.925rem (~14.8px, matching --type-body-medium / --type-title-small scale of 14px–16px)
+Font Weight: 400 / 500 (Regular/Medium)
+Color Role: var(--color-on-surface-variant)
+2. Hero Panel (Left Panel)
+Located in 
+
+
+style.css:L150-165
+:
+
+
+Headline (.hero-headline — "The space to build your boldest ideas"):
+
+
+Font Family: Manrope, sans-serif
+Font Size: Fluid clamp(2rem, 3.2vw, 3rem) (32px to 48px, matching --type-headline-large and --type-display-small)
+Font Weight: 800 (ExtraBold)
+Line Height: 1.15
+Letter Spacing: -0.03em
+Color Role: var(--color-on-secondary)
+Subheadline (.hero-subtext — "Flexible hot desks, premium dedicated offices..."):
+
+
+Font Family: Manrope, sans-serif
+Font Size: 1.05rem (~16.8px, matching --type-body-large of 16px)
+Font Weight: 400 / 500
+Line Height: 1.6
+Color Role: var(--color-on-secondary) at 85% opacity
+Design Token Reference
+In your token file (
+
+
+design-tokens.tokens.json
+), the token definitions specify two typefaces:
+
+
+Space Grotesk is assigned to large display and headlines:
+--type-headline-large: font-family: 'Space Grotesk', font-size: 32px, font-weight: 700
+--type-headline-medium: font-family: 'Space Grotesk', font-size: 28px, font-weight: 700
+Manrope is assigned to smaller headlines, titles, and body:
+--type-headline-small: font-family: 'Manrope', font-size: 24px, font-weight: 600
+--type-body-large: font-family: 'Manrope', font-size: 16px, font-weight: 500

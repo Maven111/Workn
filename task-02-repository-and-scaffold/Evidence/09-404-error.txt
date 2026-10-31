@@ -1,0 +1,8 @@
+﻿npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/@prisma%2fclien - Not found
+npm error 404
+npm error 404  The requested resource '@prisma/clien@*' could not be found or you do not have permission to access it.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: C:\Users\man\AppData\Local\npm-cache\_logs\2026-10-30T21_31_05_166Z-debug-0.log
