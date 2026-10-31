@@ -1,0 +1,218 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -----------------------------------------------------------------------------
+// Enums (per Workn Schema Specification)
+// -----------------------------------------------------------------------------
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum ResourceType {
+  DESK
+  MEETING_ROOM
+  OTHER
+}
+
+enum BillingPeriod {
+  MONTHLY
+  DAY_PASS
+  OTHER
+}
+
+enum BenefitType {
+  COWORKING_DAYS
+  MEETING_ROOM_HOURS
+  OTHER
+}
+
+// -----------------------------------------------------------------------------
+// Core Models
+// -----------------------------------------------------------------------------
+
+model User {
+  id            String        @id @default(uuid())
+  authUserId    String        @unique
+  fullName      String
+  email         String
+  phone         String?
+  role          UserRole      @default(MEMBER)
+  accountStatus AccountStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  memberships     Membership[]
+  payments        Payment[]
+  bookings        Booking[]
+  benefitLedgers  BenefitLedger[]
+  auditLogs       AuditLog[]      @relation("UserAuditLogs")
+
+  @@index([email])
+  @@index([role])
+}
+
+model MembershipPlan {
+  id                       String        @id @default(uuid())
+  name                     String
+  description              String?
+  price                    Decimal       @db.Decimal(12, 2)
+  currency                 String        @default("NGN")
+  billingPeriod            BillingPeriod
+  coworkingDayAllowance    Int?
+  meetingRoomHourAllowance Decimal?      @db.Decimal(5, 2)
+  restrictions             Json?
+  isActive                 Boolean       @default(true)
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+
+  memberships Membership[]
+}
+
+model Membership {
+  id            String           @id @default(uuid())
+  memberId      String
+  planId        String
+  startAt       DateTime
+  expiresAt     DateTime
+  status        MembershipStatus @default(PENDING)
+  purchasePrice Decimal          @db.Decimal(12, 2)
+  currency      String           @default("NGN")
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  member         User             @relation(fields: [memberId], references: [id])
+  plan           MembershipPlan   @relation(fields: [planId], references: [id])
+  payments       Payment[]
+  benefitLedgers BenefitLedger[]
+
+  @@index([memberId, status])
+  @@index([expiresAt])
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  memberId         String
+  membershipId     String?
+  bookingId        String?
+  amount           Decimal       @db.Decimal(12, 2)
+  currency         String        @default("NGN")
+  paymentReference String?       @unique
+  provider         String
+  status           PaymentStatus @default(PENDING)
+  verifiedAt       DateTime?
+  refundedAt       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  member     User        @relation(fields: [memberId], references: [id])
+  membership Membership? @relation(fields: [membershipId], references: [id])
+  booking    Booking?    @relation(fields: [bookingId], references: [id])
+
+  @@index([memberId, status])
+  @@index([paymentReference])
+}
+
+model WorkspaceResource {
+  id                    String       @id @default(uuid())
+  name                  String
+  type                  ResourceType
+  capacity              Int
+  operatingAvailability Json?
+  rate                  Decimal?     @db.Decimal(12, 2)
+  currency              String?      @default("NGN")
+  isActive              Boolean      @default(true)
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  bookings Booking[]
+
+  @@index([type, isActive])
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  memberId    String
+  resourceId  String
+  startAt     DateTime
+  endAt       DateTime
+  status      BookingStatus @default(PENDING)
+  totalCharge Decimal       @db.Decimal(12, 2)
+  currency    String?       @default("NGN")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  member         User              @relation(fields: [memberId], references: [id])
+  resource       WorkspaceResource @relation(fields: [resourceId], references: [id])
+  payments       Payment[]
+  benefitLedgers BenefitLedger[]
+
+  @@index([resourceId, status, startAt, endAt])
+  @@index([memberId, status])
+}
+
+model BenefitLedger {
+  id           String      @id @default(uuid())
+  memberId     String
+  membershipId String
+  bookingId    String?
+  benefitType  BenefitType
+  amount       Decimal     @db.Decimal(6, 2)
+  reason       String
+  actorId      String?
+  createdAt    DateTime    @default(now())
+
+  member     User       @relation(fields: [memberId], references: [id])
+  membership Membership @relation(fields: [membershipId], references: [id])
+  booking    Booking?   @relation(fields: [bookingId], references: [id])
+
+  @@index([memberId, membershipId])
+}
+
+model AuditLog {
+  id                 String   @id @default(uuid())
+  actorId            String?
+  action             String
+  affectedRecordType String
+  affectedRecordId   String?
+  outcome            String
+  metadata           Json?
+  createdAt          DateTime @default(now())
+
+  actor User? @relation("UserAuditLogs", fields: [actorId], references: [id])
+
+  @@index([actorId, createdAt])
+  @@index([affectedRecordType, affectedRecordId])
+}

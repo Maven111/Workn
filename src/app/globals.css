@@ -1,0 +1,126 @@
+@import "../../tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base HTML & Body Styles strictly bound to semantic design tokens */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--type-body-large-font-family, 'Manrope', sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================================================
+   AUTH FORM — shared input & button primitives
+   ========================================================================= */
+.wk-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-outline-variant);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font-family: var(--type-body-large-font-family);
+  font-size: var(--type-body-large-font-size);
+  font-weight: var(--type-body-large-font-weight);
+  letter-spacing: var(--type-body-large-letter-spacing);
+  line-height: var(--type-body-large-line-height);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.wk-input::placeholder {
+  color: var(--color-on-surface-variant);
+  opacity: 0.6;
+}
+
+.wk-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.wk-input.error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 12%, transparent);
+}
+
+.wk-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--type-label-large-font-family);
+  font-size: var(--type-label-large-font-size);
+  font-weight: var(--type-label-large-font-weight);
+  letter-spacing: var(--type-label-large-letter-spacing);
+  line-height: var(--type-label-large-line-height);
+  cursor: pointer;
+  transition: opacity 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+  box-shadow: var(--effect-soft-shadow);
+}
+
+.wk-btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+  box-shadow: var(--effect-medium-shadow);
+  transform: translateY(-1px);
+}
+
+.wk-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--effect-soft-shadow);
+}
+
+.wk-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wk-label {
+  display: block;
+  font-family: var(--type-label-medium-font-family);
+  font-size: var(--type-label-medium-font-size);
+  font-weight: var(--type-label-medium-font-weight);
+  letter-spacing: var(--type-label-medium-letter-spacing);
+  line-height: var(--type-label-medium-line-height);
+  color: var(--color-on-surface-variant);
+  margin-bottom: var(--space-2);
+}
+
+.wk-field-error {
+  font-family: var(--type-body-small-font-family);
+  font-size: var(--type-body-small-font-size);
+  font-weight: var(--type-body-small-font-weight);
+  color: var(--color-error);
+  margin-top: var(--space-1);
+}
+
+.wk-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-on-surface-variant);
+  font-family: var(--type-label-small-font-family);
+  font-size: var(--type-label-small-font-size);
+}
+
+.wk-divider::before,
+.wk-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-outline-variant);
+}
+
