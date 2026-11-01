@@ -124,3 +124,155 @@ body {
   background-color: var(--color-outline-variant);
 }
 
+/* =========================================================================
+   HOME & MARKETING CTA BUTTONS
+   ========================================================================= */
+.home-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--type-label-large-font-family);
+  font-size: var(--type-label-large-font-size);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 30;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: var(--effect-medium-shadow);
+  transition: opacity 150ms ease, transform 100ms ease, box-shadow 150ms ease;
+}
+
+.home-btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: var(--effect-hard-shadow);
+}
+
+.home-btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--effect-soft-shadow);
+}
+
+.home-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-outline-variant);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font-family: var(--type-label-large-font-family);
+  font-size: var(--type-label-large-font-size);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 30;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color 150ms ease, background-color 150ms ease, transform 100ms ease;
+}
+
+.home-btn-outline:hover {
+  border-color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  transform: translateY(-2px);
+}
+
+.home-btn-outline:active {
+  transform: translateY(0) scale(0.98);
+}
+
+
+
+/* =========================================================================
+   HERO SECTION – RESPONSIVE DESIGN
+   ========================================================================= */
+.hero-container {
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 var(--space-6);
+  margin: 0 auto var(--space-10);
+}
+
+.hero-title {
+  font-family: var(--type-display-large-font-family);
+  font-size: var(--type-display-large-font-size);
+  font-weight: var(--type-display-large-font-weight);
+  line-height: var(--type-display-large-line-height);
+  letter-spacing: var(--type-display-large-letter-spacing);
+  color: var(--color-on-surface);
+  margin-bottom: var(--space-4);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: nowrap;
+}
+
+.hero-subtitle {
+  font-family: var(--type-title-large-font-family);
+  font-size: var(--type-title-large-font-size);
+  font-weight: var(--type-title-large-font-weight);
+  line-height: var(--type-title-large-line-height);
+  letter-spacing: var(--type-title-large-letter-spacing);
+  color: var(--color-on-surface-variant);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.hero-description {
+  font-family: var(--type-body-large-font-family);
+  font-size: var(--type-body-large-font-size);
+  font-weight: var(--type-body-large-font-weight);
+  line-height: var(--type-body-large-line-height);
+  letter-spacing: var(--type-body-large-letter-spacing);
+  color: var(--color-on-surface-variant);
+  margin-top: var(--space-5);
+  opacity: 0.8;
+  max-width: 520px;
+  margin: var(--space-5) auto 0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .hero-container {
+    padding: 0 var(--space-4);
+  }
+  .hero-title {
+    font-size: 48px; /* smaller than 70px */
+    line-height: 56px;
+    white-space: normal; /* allow wrap on very small screens */
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .hero-description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero-title {
+    font-size: 60px;
+    line-height: 68px;
+  }
+  .hero-subtitle {
+    font-size: 20px;
+  }
+  .hero-description {
+    font-size: 15px;
+  }
+}

@@ -17,8 +17,17 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'Workn | Coworking & Workspace Management',
-  description: "Workn is Lagos' premier coworking membership and workspace management platform.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'),
+  title: {
+    default: 'Workn',
+    template: '%s | Workn',
+  },
+  description: 'Workspace management made simple',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({

@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Workn — Sign In',
-  description: 'Access your Workn coworking membership and workspace management account.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

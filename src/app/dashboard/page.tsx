@@ -4,8 +4,11 @@ import { createClient } from '@/lib/auth/server';
 import { logout } from '@/lib/auth/actions';
 
 export const metadata: Metadata = {
-  title: 'Workn — Dashboard',
-  description: 'Manage your coworking membership and workspace bookings.',
+  title: 'Dashboard',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function DashboardPage() {
