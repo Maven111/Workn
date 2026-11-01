@@ -333,6 +333,66 @@
 }
 
 /* ========================================================================= */
+/* DARK MODE — semantic token overrides                                       */
+/* ========================================================================= */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: var(--primitive-primary-80);
+    --color-on-primary: var(--primitive-primary-20);
+    --color-primary-container: var(--primitive-primary-30);
+    --color-on-primary-container: var(--primitive-primary-90);
+
+    --color-secondary: var(--primitive-secondary-80);
+    --color-on-secondary: var(--primitive-secondary-20);
+    --color-secondary-container: var(--primitive-secondary-30);
+    --color-on-secondary-container: var(--primitive-secondary-90);
+
+    --color-tertiary: var(--primitive-tertiary-80);
+    --color-on-tertiary: var(--primitive-tertiary-20);
+    --color-tertiary-container: var(--primitive-tertiary-30);
+    --color-on-tertiary-container: var(--primitive-tertiary-90);
+
+    --color-error: var(--primitive-error-80);
+    --color-on-error: var(--primitive-error-20);
+    --color-error-container: var(--primitive-error-30);
+    --color-on-error-container: var(--primitive-error-90);
+
+    --color-surface: var(--primitive-neutral-10);
+    --color-on-surface: var(--primitive-neutral-90);
+    --color-surface-variant: var(--primitive-neutral-variant-30);
+    --color-on-surface-variant: var(--primitive-neutral-variant-80);
+
+    --color-surface-container-highest: #2a2a2a;
+    --color-surface-container-high: #242424;
+    --color-surface-container: #1e1e1e;
+    --color-surface-container-low: #1a1a1a;
+    --color-surface-container-lowest: #141414;
+
+    --color-background: var(--primitive-neutral-10);
+    --color-on-background: var(--primitive-neutral-90);
+
+    --color-outline-colour: var(--primitive-neutral-variant-60);
+    --color-outline-variant: var(--primitive-neutral-variant-30);
+
+    --color-inverse-surface: var(--primitive-neutral-90);
+    --color-inverse-on-surface: var(--primitive-neutral-20);
+    --color-inverse-primary: var(--primitive-primary-40);
+
+    --color-surface-bright: #2e2e2e;
+    --color-surface-dim: #0f0f0f;
+
+    --color-success: var(--primitive-success-80);
+    --color-on-success: var(--primitive-success-20);
+    --color-success-container: var(--primitive-success-30);
+    --color-on-success-container: var(--primitive-success-90);
+
+    --effect-soft-shadow: 1px 6px 30px 0px rgba(0, 0, 0, 0.4);
+    --effect-medium-shadow: 4px 6px 24px 0px rgba(0, 0, 0, 0.5);
+    --effect-hard-shadow: 6px 10px 20px 0px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ========================================================================= */
 /* TYPOGRAPHY UTILITY CLASSES                                                */
 /* ========================================================================= */
 .type-display-large {

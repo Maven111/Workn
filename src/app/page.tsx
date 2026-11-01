@@ -61,67 +61,40 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <>
-      <style>{`
-        .home-btn-outline {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: var(--space-3) var(--space-8);
-          border-radius: var(--radius-md);
-          border: 1.5px solid var(--color-outline-variant);
-          background-color: transparent;
-          color: var(--color-on-surface);
-          font-family: var(--type-label-large-font-family);
-          font-size: var(--type-label-large-font-size);
-          font-weight: 600;
-          text-decoration: none;
-          transition: border-color 150ms ease, background-color 150ms ease;
-        }
-        .home-btn-outline:hover {
-          border-color: var(--color-primary);
-          background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
-        }
-        .home-btn-primary {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: var(--space-3) var(--space-8);
-          border-radius: var(--radius-md);
-          background-color: var(--color-primary);
-          color: var(--color-on-primary);
-          font-family: var(--type-label-large-font-family);
-          font-size: var(--type-label-large-font-size);
-          font-weight: 600;
-          text-decoration: none;
-          box-shadow: var(--effect-medium-shadow);
-          transition: opacity 150ms ease, transform 100ms ease;
-        }
-        .home-btn-primary:hover {
-          opacity: 0.9;
-          transform: translateY(-1px);
-        }
-      `}</style>
-
-      <main
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 'var(--space-6)',
-          background: `radial-gradient(ellipse 80% 55% at 50% -5%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent)`,
-          backgroundColor: 'var(--color-surface)',
-          position: 'relative',
-        }}
-      >
-        {/* Brand Mark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-12)' }}>
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'var(--space-6)',
+        background: `radial-gradient(ellipse 80% 55% at 50% -5%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent)`,
+        backgroundColor: 'var(--color-surface)',
+        position: 'relative',
+      }}
+    >
+      {/* Fixed top header */}
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 'var(--space-4) var(--space-8)',
+        zIndex: 100,
+        backgroundColor: 'color-mix(in srgb, var(--color-surface) 85%, transparent)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid color-mix(in srgb, var(--color-outline-variant) 50%, transparent)',
+      }}>
+        <Link href="/" aria-label="Workn Home" style={{ textDecoration: 'none' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
+              width: '40px',
+              height: '40px',
               borderRadius: 'var(--radius-md)',
               backgroundColor: 'var(--color-primary)',
               color: 'var(--color-on-primary)',
@@ -130,66 +103,108 @@ export default function HomePage() {
               justifyContent: 'center',
               fontFamily: 'var(--type-display-large-font-family)',
               fontWeight: 700,
-              fontSize: '24px',
+              fontSize: '20px',
               boxShadow: 'var(--effect-medium-shadow)',
+              cursor: 'pointer',
             }}
           >
             W
           </div>
-          <span
-            style={{
-              fontFamily: 'var(--type-headline-large-font-family)',
-              fontWeight: 700,
-              fontSize: '24px',
-              color: 'var(--color-on-surface)',
-              letterSpacing: '-0.5px',
-            }}
-          >
-            Workn
-          </span>
-        </div>
+        </Link>
+        <Link href="/register" className="home-btn-primary" id="cta-get-started">Get started</Link>
+      </header>
 
-        {/* Hero */}
-        <div style={{ textAlign: 'center', maxWidth: '560px', marginBottom: 'var(--space-10)' }}>
-          <h1
-            className="type-display-small"
-            style={{ color: 'var(--color-on-surface)', marginBottom: 'var(--space-4)' }}
-          >
-            Your workspace,<br />your way.
-          </h1>
-          <p
-            className="type-body-large"
-            style={{ color: 'var(--color-on-surface-variant)', lineHeight: '1.65' }}
-          >
-            Book desks and meeting rooms, manage your coworking membership,
-            and track your workspace benefits — all in one place.
-          </p>
-        </div>
 
-        {/* CTAs */}
-        <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Link href="/register" id="cta-register" className="home-btn-primary">
-            Get started
-          </Link>
-          <Link href="/login" id="cta-login" className="home-btn-outline">
-            Sign in
-          </Link>
-        </div>
-
-        {/* Footer */}
-        <footer
+      {/* Hero */}
+      <div
+        style={{
+          textAlign: 'center',
+          width: '100%',
+          maxWidth: '800px',
+          padding: '0 var(--space-6)',
+          marginBottom: 'var(--space-10)',
+        }}
+      >
+        <h1
+          className="type-display-large"
           style={{
-            position: 'absolute',
-            bottom: 'var(--space-6)',
-            fontFamily: 'var(--type-body-small-font-family)',
-            fontSize: 'var(--type-body-small-font-size)',
-            color: 'var(--color-on-surface-variant)',
-            opacity: 0.6,
+            color: 'var(--color-on-surface)',
+            marginBottom: 'var(--space-4)',
+            lineHeight: '1.05',
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
+            whiteSpace: 'nowrap',
+            fontSize: 'clamp(1.5rem, 5vw, 3rem)',
           }}
         >
-          &copy; {new Date().getFullYear()} Workn Technologies Ltd.
-        </footer>
-      </main>
-    </>
+          Your Workspace, Your Way.
+        </h1>
+        <p className="hero-subtitle">
+          <span style={{ display: 'block' }}>
+            Less time figuring out a workspace, more time getting things done.
+          </span>
+          <span style={{ display: 'block' }}>
+            Everything Working for you
+          </span>
+        </p>
+        <p className="hero-description">
+          Book workspace, and meeting rooms, manage your  workspace benefits — all in one place.
+        </p>
+      </div>
+
+      {/* CTAs */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 'var(--space-4)',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          position: 'relative',
+          zIndex: 30,
+        }}
+      >
+        <Link
+          href="/register"
+          id="cta-register"
+          role="button"
+          prefetch={true}
+          className="home-btn-primary"
+          style={{
+            cursor: 'pointer',
+            pointerEvents: 'auto',
+          }}
+        >
+          Get started
+        </Link>
+        <Link
+          href="/login"
+          id="cta-login"
+          role="button"
+          prefetch={true}
+          className="home-btn-outline"
+          style={{
+            cursor: 'pointer',
+            pointerEvents: 'auto',
+          }}
+        >
+          Sign in
+        </Link>
+      </div>
+
+      {/* Footer */}
+      <footer
+        style={{
+          position: 'absolute',
+          bottom: 'var(--space-6)',
+          fontFamily: 'var(--type-body-small-font-family)',
+          fontSize: 'var(--type-body-small-font-size)',
+          color: 'var(--color-on-surface-variant)',
+          opacity: 0.6,
+          pointerEvents: 'none',
+        }}
+      >
+        &copy; {new Date().getFullYear()} Workn Technologies Ltd.
+      </footer>
+    </main>
   );
 }
