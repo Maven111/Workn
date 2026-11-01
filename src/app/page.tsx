@@ -81,7 +81,7 @@ export default function HomePage() {
         left: 0,
         right: 0,
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         padding: 'var(--space-4) var(--space-8)',
         zIndex: 100,
@@ -111,7 +111,12 @@ export default function HomePage() {
             W
           </div>
         </Link>
-        <Link href="/register" className="home-btn-primary" id="cta-get-started">Get started</Link>
+        <Link
+          href="/register"
+          className="home-btn-primary"
+          id="cta-get-started"
+          style={{ position: 'absolute', right: 'var(--space-8)' }}
+        >Get started</Link>
       </header>
 
 
