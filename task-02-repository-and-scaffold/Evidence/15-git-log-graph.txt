@@ -1,0 +1,45 @@
+﻿* ddf27b4 (HEAD → Against, origin/Against)  test: center-logo-in-header
+│
+│ *   5b3d2df (origin/main, origin/HEAD)  Merge pull request #1 ← User-interaction
+│ ├╮
+│ │╯
+├─┤
+* │ 7882478 (origin/User-interaction, User-interaction)  feat: responsive-layout-dark-mode-tokens
+* │ 8c0e0fd (main)  feat: dynamic page titles, brand favicon, SEO tags
+│ * 3dacde8 ┐
+│ * ...     │  earlier GitHub web uploads / task evidence commits
+│ * ...     ┘
+├─╯
+*   5ab5112  Merge remote repository files into main
+│╲
+│ * bc83557 ┐
+│ * ...     │  initial design system / scaffold evidence uploads
+│ * ...     ┘
+├─╯
+* 9484aba  Initial commit: Workn workspace scaffolding, design tokens, auth system, Prisma schema
+
+
+
+
+
+
+
+
+Summary of branches:
+
+
+Branch
+	Status
+	Latest commit
+	Against ← HEAD
+	local + remote
+	test: center-logo-in-header
+	User-interaction
+	local + remote
+	feat: responsive-layout-dark-mode-tokens
+	main
+	local
+	feat: dynamic page titles…
+	origin/main
+	remote (ahead)
+	PR #1 merged from User-interaction
