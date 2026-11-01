@@ -136,4 +136,4 @@ Correctness, data integrity and permission enforcement take priority over maximi
 
 ---
 
-**Workn — Your workspace, managed simply.**
+**Workn — Everything, working for you.**
