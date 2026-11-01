@@ -179,7 +179,7 @@ function HomeContent() {
             </div>
           </button>
           <Link
-            href="/register"
+            href="/auth?view=register"
             className="home-btn-primary"
             id="cta-get-started"
             style={{ pointerEvents: 'auto' }}
@@ -240,7 +240,7 @@ function HomeContent() {
               }}
             >
               <Link
-                href="/register"
+                href="/auth?view=register"
                 id="cta-register"
                 role="button"
                 prefetch={true}
@@ -253,7 +253,7 @@ function HomeContent() {
                 Get started
               </Link>
               <Link
-                href="/login"
+                href="/auth?view=login"
                 id="cta-login"
                 role="button"
                 prefetch={true}

@@ -23,6 +23,21 @@ const nextConfig = {
         destination: '/?view=terms',
         permanent: false,
       },
+      {
+        source: '/login',
+        destination: '/auth?view=login',
+        permanent: false,
+      },
+      {
+        source: '/register',
+        destination: '/auth?view=register',
+        permanent: false,
+      },
+      {
+        source: '/forgot-password',
+        destination: '/auth?view=forgot-password',
+        permanent: false,
+      },
     ];
   },
 };

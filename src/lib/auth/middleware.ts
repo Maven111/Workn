@@ -46,13 +46,14 @@ export async function updateSession(request: NextRequest) {
 
   if (isProtected && !user) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = '/login';
+    redirectUrl.pathname = '/auth';
+    redirectUrl.searchParams.set('view', 'login');
     redirectUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
   // Auth routes: redirect already-authenticated users away from login/register
-  const authRoutes = ['/login', '/register', '/forgot-password'];
+  const authRoutes = ['/auth', '/login', '/register', '/forgot-password'];
   const isAuthRoute = authRoutes.some((route) => pathname === route || pathname.startsWith(route));
 
   if (isAuthRoute && user) {
