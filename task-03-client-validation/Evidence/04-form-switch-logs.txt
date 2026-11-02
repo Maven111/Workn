@@ -1,0 +1,13 @@
+﻿○ Compiling / ...
+ ✓ Compiled / in 7.7s (547 modules)
+ ✓ Compiled in 1068ms (269 modules)
+ GET / 200 in 8920ms
+ ✓ Compiled in 251ms (254 modules)
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 639ms (310 modules)
+ GET /icon.svg 200 in 888ms
+ GET /icon.svg 200 in 29ms
+ ○ Compiling /auth …                (NB: no page reload, switching compiled in Auth page)
+ ✓ Compiled /auth in 3s (688 modules)
+ GET /?view=terms 200 in 365ms
+ GET / 200 in 163ms
