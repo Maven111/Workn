@@ -134,6 +134,12 @@ function AuthContent() {
       return;
     }
 
+    const acceptTerms = formData.get('acceptTerms');
+    if (!acceptTerms) {
+      setRegError('You must agree to the Terms of Service and Privacy Policy to create an account.');
+      return;
+    }
+
     startRegTransition(async () => {
       const result = await register(formData);
       if (result?.error) {
@@ -565,6 +571,62 @@ function AuthContent() {
                         placeholder="Repeat your password"
                         className="wk-input"
                       />
+                    </div>
+
+                    {/* Terms & Conditions Acceptance Checkbox */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', marginTop: 'var(--space-1)' }}>
+                      <input
+                        id="reg-accept-terms"
+                        name="acceptTerms"
+                        type="checkbox"
+                        required
+                        style={{
+                          marginTop: '3px',
+                          width: '16px',
+                          height: '16px',
+                          accentColor: 'var(--color-primary)',
+                          cursor: 'pointer',
+                          flexShrink: 0,
+                        }}
+                      />
+                      <label
+                        htmlFor="reg-accept-terms"
+                        style={{
+                          fontFamily: 'var(--type-body-small-font-family)',
+                          fontSize: 'var(--type-body-small-font-size)',
+                          color: 'var(--color-on-surface-variant)',
+                          lineHeight: 1.45,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        I agree to the{' '}
+                        <Link
+                          href="/?view=terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: 'var(--color-primary)',
+                            textDecoration: 'underline',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Terms of Service
+                        </Link>{' '}
+                        and{' '}
+                        <Link
+                          href="/?view=privacy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: 'var(--color-primary)',
+                            textDecoration: 'underline',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Privacy Policy
+                        </Link>
+                        .
+                      </label>
                     </div>
 
                     <button
