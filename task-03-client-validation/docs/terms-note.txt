@@ -1,0 +1,26 @@
+﻿The Terms and Condition used is adapted from the Nigeria Law
+
+Here’s the section-by-section commentary:
+
+1.  Agreement to Terms & Scope Solid opener. It correctly identifies the parties, establishes binding intent, and scopes the services (digital platform + physical coworking). One note: "AI-supported operations" is mentioned here but is a fairly novel phrase in a ToS — worth reviewing that it's clearly defined later in 7.
+
+
+2.  User Eligibility & Account Security Clean and practical. The 18-year age threshold is appropriate under Nigerian law. The non-transferability clause is important for a coworking membership product. Good inclusion.
+
+
+3.  Memberships, Subscriptions & Benefit Rules This is the most product-specific section and it's done well. The four callout blocks (Monthly, Non-Rollover, Day Pass, Expired Status) map directly to real business logic already in the system. The non-rollover clause in particular is important to call out prominently — it's a common source of member disputes in coworking businesses.
+
+
+4.  Workspace & Meeting Room Reservations The anti-overlap and capacity limit clauses are technically accurate and reflect the booking system's actual enforcement. The punctuality clause ("begin and end strictly at confirmed timestamps") is important and will help manage member expectations. Consider whether there should be a grace period policy mentioned here.
+
+
+5.  Pricing, Payments & Refund Policy The 2-hour cancellation window for meeting rooms is specific and good — specificity in refund policy is far better than vague language. However, the document currently does not specify what happens with memberships (only bookings) in terms of cancellation. That gap should eventually be filled.
+
+
+6. Physical Facility Conduct Well-balanced — it covers noise, damage liability, and infrastructure caveats (power/internet). The force majeure mention is sensible for Lagos's infrastructure context. The "call booth" clause is a realistic and enforceable rule common in quality coworking spaces.
+
+
+7.  AI-Powered Member Assistant This is notably forward-looking and legally prudent. Clearly limiting what the AI can and cannot do (especially the clause that "fee waivers or manual refunds... require explicit administrative authorization and cannot be self-directed via AI") directly protects the business. The right to escalate to a human is also strong from a consumer protection standpoint. This section should stay as a model for how to disclose AI-driven systems in ToS.
+
+
+8.  Governing Law & Dispute Resolution Correct jurisdiction (Lagos State / Federal Republic of Nigeria). The two-stage approach — negotiation first, then courts — is standard practice and reduces legal overhead. One gap: there's no mention of arbitration as an alternative to court proceedings, which is increasingly common and often faster in Nigeria.

@@ -1,0 +1,33 @@
+﻿There are currently 5 pages (routes with visual UI) in the application, plus 1 backend API route:
+
+
+User-Facing Pages (5 Total)
+#
+	Route
+	Purpose
+	File Location
+	1
+	/
+	Home / Landing Page
+Brand hero with "Get started" and "Sign in" call-to-actions.
+	src/app/page.tsx
+	2
+	/login
+	Sign In Page
+Email & password authentication, show/hide password, and error handling.
+	src/app/(auth)/login/page.tsx
+	3
+	/register
+	Create Account Page
+Full name, email, and password confirmation with email verification notice.
+	src/app/(auth)/register/page.tsx
+	4
+	/forgot-password
+	Password Reset Page
+Email submission form to trigger Supabase password reset link.
+	src/app/(auth)/forgot-password/page.tsx
+	5
+	/dashboard
+	Member Dashboard (Protected)
+Server-guarded landing page displaying member email and sign-out button.
+	src/app/dashboard/page.tsx

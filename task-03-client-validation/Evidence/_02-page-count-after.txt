@@ -1,0 +1,26 @@
+﻿And now, the app currently has 3 pages:
+
+
+
+#
+	Route
+	File
+	Description
+	1
+	/
+	src/app/page.tsx
+	Home — hero landing page. Also conditionally renders Privacy Policy and Terms of Service as inline views (so they're views, not separate pages)
+	2
+	/auth
+	src/app/auth/page.tsx
+	Auth — single-page architecture with 3 conditional views: login, register, forgot-password
+	3
+	/dashboard
+	src/app/dashboard/page.tsx
+	Dashboard — protected member page (redirects to login if unauthenticated)
+
+
+
+
+	Summary: 3 routes, but effectively 6 views when you count the conditional renders inside Home
+Summary: 3 routes, but effectively 6 views when you count the conditional renders inside Home
