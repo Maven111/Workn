@@ -45,7 +45,9 @@
 
 | Parameter / Decision | Value | Reason / Origin | Evidence File Reference |
 | :--- | :--- | :--- | :--- |
-| **Task 3: Password Minimum Length** | *Pending Task 3* | Derived for Workn security policy. | `task-03-client-validation/docs/validation-rules.md` |
+| **Task 3: Full Name Length Range** | **3 to 80 characters** | Blocks 1–2 char throwaway entries and prevents receipt/table overflow; blocks 2-letter legal names (*Jo*, *Li*). | [`src/components/auth/AuthClient.tsx` Lines 101–102](file:///c:/Users/man/Desktop/Workn/src/components/auth/AuthClient.tsx#L101-L102), [`task-03-client-validation/docs/validation-rules.md`](file:///c:/Users/man/Desktop/Workn/task-03-client-validation/docs/validation-rules.md) |
+| **Task 3: Phone Number Length Range** | **10 to 11 digits** | Standard Nigerian mobile number format (`0803...` or `803...` after `Number()` conversion). | [`src/components/auth/AuthClient.tsx` Line 96](file:///c:/Users/man/Desktop/Workn/src/components/auth/AuthClient.tsx#L96), [`task-03-client-validation/docs/validation-rules.md`](file:///c:/Users/man/Desktop/Workn/task-03-client-validation/docs/validation-rules.md) |
+| **Task 3: Password Length Range** | **8 to 72 characters** | NIST SP 800-63B minimum (8) and bcrypt truncation ceiling (72). | [`src/components/auth/AuthClient.tsx` Lines 130–131](file:///c:/Users/man/Desktop/Workn/src/components/auth/AuthClient.tsx#L130-L131), [`task-03-client-validation/docs/validation-rules.md`](file:///c:/Users/man/Desktop/Workn/task-03-client-validation/docs/validation-rules.md) |
 | **Task 4: Argon2id / bcrypt Timing** | *Pending Task 4* | Measured on Builder machine. | `task-04-server-security/docs/hashing.md` |
 | **Task 4: SHA-256 Timing** | *Pending Task 4* | Measured on Builder machine. | `task-04-server-security/docs/hashing.md` |
 | **Task 4: Rate Limit Threshold & Window** | *Pending Task 4* | Selected window in minutes and request cap. | `task-04-server-security/docs/rate-limiting.md` |

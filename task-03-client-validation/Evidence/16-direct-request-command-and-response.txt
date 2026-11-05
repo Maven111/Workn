@@ -1,0 +1,67 @@
+================================================================================
+WORKN DIRECT COMMAND-LINE BYPASS EVIDENCE
+Bypassing Browser Client-Side Validation via Raw HTTP POST Request
+Date / Timestamp: 2026-11-05T18:53:21.140Z
+Client: Command Line CLI (curl / HTTP Request)
+Target: http://localhost:3005/auth
+Host Environment: Windows 11 / Node.js v20.18.0 / Next.js 14.2.35
+================================================================================
+
+1. COMMAND EXECUTED:
+--------------------------------------------------------------------------------
+curl -i -X POST "http://localhost:3005/auth" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: text/html,application/xhtml+xml,application/xml" \
+  -d "fullName=A&email=attacker-bypass@example.com&phone=invalid-phone&password=spaces8&acceptTerms=false"
+
+
+2. PAYLOAD TRANSMITTED (DELIBERATELY INVALID DATA):
+--------------------------------------------------------------------------------
+Parameter        Value                         Client Rule Bypassed
+--------------------------------------------------------------------------------
+fullName         "A"                           Bypasses 3-character minimum rule
+email            "attacker-bypass@example.com" Valid format, but unverified origin
+phone            "invalid-phone"               Bypasses 10-11 numeric digits rule
+password         "spaces8"                     Weak / invalid password shape
+acceptTerms      "false"                       Bypasses mandatory legal terms acceptance
+
+
+3. EXACT SERVER RESPONSE:
+--------------------------------------------------------------------------------
+HTTP/1.1 500 Internal Server Error
+x-powered-by: Next.js
+etag: "66fci67lppl"
+content-type: text/html; charset=utf-8
+content-length: 21
+vary: Accept-Encoding
+date: Thu, 05 Nov 2026 18:53:21 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+Internal Server Error
+
+
+4. TECHNICAL OBSERVATION & SECURITY IMPLICATIONS:
+--------------------------------------------------------------------------------
+1. Client Checks Completely Evaded:
+   The request was sent directly to the server endpoint using a CLI tool.
+   None of the React event handlers (onBlur, onChange), regex assertions,
+   disabled buttons, or ARIA warnings were ever invoked.
+
+2. Server Ignored All Semantic Rules:
+   The server did NOT return HTTP 400 Bad Request or HTTP 422 Unprocessable Entity.
+   The server made zero attempt to validate that 'fullName' was >= 3 characters,
+   zero attempt to verify that 'phone' contained digits, and zero attempt to
+   verify that terms and conditions had been accepted.
+
+3. Failure Cause:
+   The server endpoint crashed with a 500 Internal Server Error due to missing
+   server-side handling and unpackaged server action references rather than
+   gracefully validating inputs.
+
+4. Conclusion:
+   Client-side validation provided ZERO security barrier against this command-line
+   request. Anyone with a network connection and a CLI tool can transmit arbitrary,
+   malformed data directly to the server. Real security validation must be implemented
+   on the server boundary in Task 4.
+================================================================================
