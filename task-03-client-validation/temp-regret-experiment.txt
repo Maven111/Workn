@@ -1,2 +1,0 @@
-EXPERIMENT: Unwanted client-side auto-bypass script.
-The Builder decided against including this speculative test code in the production repository.
