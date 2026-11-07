@@ -1,0 +1,18 @@
+COMMAND:
+npx prisma migrate dev --name add_required_tax_id
+
+TERMINAL OUTPUT:
+
+C:\Users\man\Desktop\Workn>npx prisma migrate dev --name add_required_tax_id
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-eu-central-1.pooler.supabase.com:5432"
+
+Error: 
+⚠️ We found changes that cannot be executed:
+
+  • Step 0 Added the required column `taxId` to the `User` table without a default value. There are 1 rows in this table, it is not possible to execute this step.
+
+You can use prisma migrate dev --create-only to create the migration file, and manually modify it to address the underlying issue(s).
+Then run prisma migrate dev to apply it and verify it works.
+

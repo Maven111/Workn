@@ -161,12 +161,7 @@ function AuthContent() {
     }
   }, [queryView]);
 
-  const switchView = (view: AuthView) => {
-    setActiveView(view);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('view', view);
-    router.push(`/auth?${params.toString()}`);
-  };
+
 
   // State for Login (format validated ONLY on submit)
   const [loginShowPassword, setLoginShowPassword] = useState(false);
@@ -217,6 +212,24 @@ function AuthContent() {
   const [forgotError, setForgotError] = useState<string | null>(null);
   const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
   const [isForgotPending, startForgotTransition] = useTransition();
+
+  const switchView = (view: AuthView) => {
+    setActiveView(view);
+    if (view === 'register') {
+      setRegSuccess(null);
+      setRegError(null);
+    }
+    if (view === 'login') {
+      setLoginError(null);
+    }
+    if (view === 'forgot-password') {
+      setForgotSuccess(null);
+      setForgotError(null);
+    }
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', view);
+    router.push(`/auth?${params.toString()}`);
+  };
 
   // Handlers
   async function handleLoginSubmit(event: React.FormEvent<HTMLFormElement>) {
