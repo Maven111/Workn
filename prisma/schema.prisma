@@ -59,6 +59,14 @@ enum BenefitType {
   OTHER
 }
 
+enum AttemptStatus {
+  INITIATED
+  ABANDONED
+  FAILED
+  TIMEOUT
+  GATEWAY_ERROR
+}
+
 // -----------------------------------------------------------------------------
 // Core Models
 // -----------------------------------------------------------------------------
@@ -68,14 +76,17 @@ model User {
   authUserId    String        @unique
   fullName      String
   email         String
+  taxId         String
   phone         String?
   role          UserRole      @default(MEMBER)
   accountStatus AccountStatus @default(ACTIVE)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
+  sessions        Session[]
   memberships     Membership[]
   payments        Payment[]
+  paymentAttempts PaymentAttempt[]
   bookings        Booking[]
   benefitLedgers  BenefitLedger[]
   auditLogs       AuditLog[]      @relation("UserAuditLogs")
@@ -215,4 +226,59 @@ model AuditLog {
 
   @@index([actorId, createdAt])
   @@index([affectedRecordType, affectedRecordId])
+}
+
+model Session {
+  id               String    @id @default(uuid())
+  userId           String
+  sessionTokenHash String    @unique
+  ipAddress        String?
+  userAgent        String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionTokenHash])
+  @@index([userId, expiresAt])
+}
+
+model PaymentAttempt {
+  id               String        @id @default(uuid())
+  memberId         String
+  targetType       String
+  targetId         String?
+  amount           Decimal       @db.Decimal(12, 2)
+  currency         String        @default("NGN")
+  attemptReference String        @unique
+  gateway          String
+  status           AttemptStatus @default(INITIATED)
+  errorCode        String?
+  errorMessage     String?
+  ipAddress        String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  member User @relation(fields: [memberId], references: [id])
+
+  @@index([memberId, createdAt])
+  @@index([attemptReference])
+  @@index([status, createdAt])
+}
+
+model KnowledgeChunk {
+  id            String   @id @default(uuid())
+  documentTitle String
+  sourceSlug    String
+  content       String   @db.Text
+  tokenCount    Int
+  category      String
+  embedding     Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([sourceSlug])
 }

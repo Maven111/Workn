@@ -1,0 +1,39 @@
+COMMAND:
+node scripts\benchmark-hashing.mjs
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\benchmark-hashing.mjs
+================================================================================
+WORKN BENCHMARK: BCRYPT (COST FACTOR 12) VS SHA-256
+Platform: win32 x64 | Node version: v24.19.0
+Password under test: WorknSecureMember2026!
+================================================================================
+
+Running 5 iterations of bcrypt.hashSync(password, 12)...
+-> Bcrypt (Cost 12) Average Time: 451.95 ms per hash
+
+Running 100,000 iterations of SHA-256...
+-> SHA-256 Average Time: 0.001712 ms (1.712 microseconds) per hash
+
+================================================================================
+ARITHMETIC & ATTACKER FEASIBILITY COMPARISON
+================================================================================
+1. Single-Core Throughput on this machine:
+   - Bcrypt (Cost 12): ~2.21 guesses / second
+   - SHA-256:          ~584,221 guesses / second
+   - Ratio: SHA-256 is 264,041x FASTER than bcrypt.
+
+2. Time to brute-force an 8-character alphanumeric password (62^8 = 218,340,105,584,896 combinations):
+   - Attacker hardware: Dedicated cracking rig (8x NVIDIA RTX 4090 GPUs)
+   - Cracking SHA-256:  18.2 minutes (TOTAL COLLAPSE)
+   - Cracking Bcrypt:   8.6 YEARS (COMPUTATIONALLY INFEASIBLE)
+
+================================================================================
+THE ASYMMETRIC INVERSION IN PLAIN WORDS:
+When a legitimate user logs in to Workn, the server computes exactly 1 hash,
+which takes 451.95 ms—completely imperceptible to human response time.
+When an attacker steals a database dump and tries billions of dictionary words,
+the same delay multiplies by billions. Slowing the algorithm costs the business
+nothing, but costs an attacker an entire lifetime of electricity and hardware.
+================================================================================
+

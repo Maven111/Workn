@@ -1,0 +1,21 @@
+COMMAND:
+node scripts\hash-twice.mjs
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\hash-twice.mjs
+Password to hash: WorknSecureMember2026!
+Configured Salt Rounds (Cost Factor): 12
+
+--- HASH OUTPUT 1 ---
+$2b$12$6AsmBo.KwqffdN8cCgCWOuidPLzV.3sCodfnm24TTmlGFNQi46rGe
+
+--- HASH OUTPUT 2 ---
+$2b$12$MMep/WQe0raCqJbtIlsY5OL5aUhIKD53X5n87ptk1eCwpKTkHezQ.
+
+--- WHY DO THEY DIFFER? ---
+They differ because bcrypt generates a unique, cryptographically secure 128-bit (16-byte) random salt for each invocation, preventing rainbow table attacks and ensuring identical passwords produce completely distinct ciphertext hashes.
+
+Verification check:
+Hash 1 matches original password: true
+Hash 2 matches original password: true
+

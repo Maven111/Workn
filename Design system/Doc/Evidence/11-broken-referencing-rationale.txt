@@ -1,0 +1,4 @@
+# Deliberate Regression: Rationale for Semantic Token Referencing
+
+When a colour role references a raw hex value instead of a semantic token variable, it severs the link to the design system's single source of truth. Updating the brand colour at the source cascades through properly referenced tokens, but leaves hardcoded values silently stranded on the obsolete palette. This visual inconsistency in production demonstrates why strict semantic referencing across all tiers is mandatory rather than optional.
+

@@ -1,0 +1,78 @@
+================================================================================
+TASK 4 STEP 3: THREE-STEP MIGRATION RESOLUTION FOR REQUIRED COLUMN
+================================================================================
+Table: User
+Column to add: taxId (required in final state)
+Pattern: Expand (Optional) -> Backfill (Fill NULLs) -> Contract (Required)
+
+--------------------------------------------------------------------------------
+STEP 1: ADD COLUMN AS OPTIONAL (taxId String?)
+--------------------------------------------------------------------------------
+COMMAND:
+npx prisma migrate dev --name add_tax_id_optional
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>npx prisma migrate dev --name add_tax_id_optional
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-eu-central-1.pooler.supabase.com:5432"
+
+Applying migration `20261107115959_add_tax_id_optional`
+
+The following migration(s) have been created and applied from new schema changes:
+
+migrations/
+  └─ 20261107115959_add_tax_id_optional/
+    └─ migration.sql
+
+Your database is now in sync with your schema.
+
+✔ Generated Prisma Client (v6.4.1) to .\node_modules\@prisma\client in 139ms
+
+
+--------------------------------------------------------------------------------
+STEP 2: BACKFILL NULL VALUES ON EXISTING ROWS
+--------------------------------------------------------------------------------
+COMMAND:
+node scripts\backfill-tax-id.mjs
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\backfill-tax-id.mjs
+Backfill complete: 1 row(s) updated with valid taxId.
+Current User records in database: [
+  {
+    id: '828e9db3-3daa-46e5-8569-efa7f88a9b45',
+    fullName: 'Adebayo Ogunlesi',
+    taxId: 'NIG-TAX-001'
+  }
+]
+
+--------------------------------------------------------------------------------
+STEP 3: MAKE COLUMN REQUIRED (taxId String)
+--------------------------------------------------------------------------------
+COMMAND:
+npx prisma migrate dev --name make_tax_id_required
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>npx prisma migrate dev --name make_tax_id_required
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-eu-central-1.pooler.supabase.com:5432"
+
+Applying migration `20261107123404_make_tax_id_required`
+
+The following migration(s) have been created and applied from new schema changes:
+
+migrations/
+  └─ 20261107123404_make_tax_id_required/
+    └─ migration.sql
+
+Your database is now in sync with your schema.
+
+✔ Generated Prisma Client (v6.4.1) to .\node_modules\@prisma\client in 269ms
+
+================================================================================
+CONCLUSION:
+The 3-step pattern successfully added the required non-nullable column 'taxId'
+to a populated production table without downtime, data loss, or constraint violation.
+================================================================================

@@ -1,0 +1,33 @@
+COMMAND:
+npx prisma migrate dev --name init_task4_schema
+
+TERMINAL OUTPUT:
+
+C:\Users\man\Desktop\Workn>npx prisma migrate dev --name init_task4_schema
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-eu-central-1.pooler.supabase.com:5432"
+
+Applying migration `20261107073535_init_task4_schema`
+
+The following migration(s) have been created and applied from new schema changes:
+
+migrations/
+  └─ 20261107073535_init_task4_schema/
+    └─ migration.sql
+
+Your database is now in sync with your schema.
+
+✔ Generated Prisma Client (v6.4.1) to .\node_modules\@prisma\client in 283ms
+
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.4.1 -> 8.0.0-rc.33                  │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘

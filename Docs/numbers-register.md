@@ -1,0 +1,60 @@
+# Workn Numbers Register
+
+*Mandatory register tracking every quantitative decision, timing figure, dimension, threshold, and parameter across all build tasks. Every number cited in documentation, PRs, and the live viva must match this file exactly.*
+
+---
+
+## Task 1: Design System Numbers
+
+| Parameter / Decision | Value | Reason / Origin | Evidence File Reference |
+| :--- | :--- | :--- | :--- |
+| **Pinned Primary Key Tone** | **40** (`#16a34a`) | Pinned brand forest green to anchor primary scale. | [`tokens.css` Line 32](file:///c:/Users/man/Desktop/Workn/tokens.css#L32), `Design system/Doc/Evidence/002-palette-after-pin.png` |
+| **Tonal Palette Tone Count** | **14 tones** | 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100. Sufficient to support light and dark modes from a single source. | [`Design system/Docs/TONAL PALETTE_ WHY AND HOW MANY.md`](file:///c:/Users/man/Desktop/Workn/Design%20system/Docs/TONAL%20PALETTE_%20WHY%20AND%20HOW%20MANY.md) |
+| **Extra Neutral Tonal Steps** | **10 tones** | 4, 6, 12, 17, 22, 24, 87, 92, 94, 96 to provide subtle surface elevation container tiers. | [`tokens.css` Lines 106–115](file:///c:/Users/man/Desktop/Workn/tokens.css#L106-L115) |
+| **Total Typography Styles** | **15 styles** | 5 roles (Display, Headline, Title, Body, Label) × 3 sizes (Large, Medium, Small). | [`Design system/Doc/Evidence/type-scale.md`](file:///c:/Users/man/Desktop/Workn/Design%20system/Doc/Evidence/type-scale.md) |
+| **Display Large Font Size** | **70px** | Space Grotesk Bold, designed for hero brand impact. | [`tokens.css` Line 235](file:///c:/Users/man/Desktop/Workn/tokens.css#L235) |
+| **Display Large Line Height** | **105px** (1.5x) | Tested 1.4 (98px - cramped) and 1.6 (112px - loose). 1.5 preserves cohesion without crowding descenders. | [`tokens.css` Line 237](file:///c:/Users/man/Desktop/Workn/tokens.css#L237), [`Design system/Docs/interview-answers.md` Q10](file:///c:/Users/man/Desktop/Workn/Design%20system/Docs/interview-answers.md#L70) |
+| **Display Large Letter Spacing** | **-3.5px** (~ -5%) | Eye-tuned tracking divergence to prevent loose letter gaps on 70px display text. | [`tokens.css` Line 238](file:///c:/Users/man/Desktop/Workn/tokens.css#L238), `Design system/Doc/Evidence/04-spacing-chosen.png` |
+| **Body Large Font Size / Line Height** | **16px / 24px** (1.5x) | Manrope Regular with 1.5 line-height multiplier for WCAG AAA paragraph readability. | [`tokens.css` Lines 280–282](file:///c:/Users/man/Desktop/Workn/tokens.css#L280-L282) |
+| **On Primary / Primary Contrast** | **3.24:1** (FAIL) | White `#f9fff5` on `#16a34a`. Fails WCAG AA 4.5:1; requires role restriction to containers/icons. | [`Design system/Docs/Pair _ Contrast ratio.md` Line 6](file:///c:/Users/man/Desktop/Workn/Design%20system/Docs/Pair%20_%20Contrast%20ratio.md#L6) |
+| **On Surface / Surface Contrast** | **16.30:1** (PASS) | Near-black text on off-white surface tone 98, exceeding AAA requirements. | [`Design system/Docs/Pair _ Contrast ratio.md` Line 14](file:///c:/Users/man/Desktop/Workn/Design%20system/Docs/Pair%20_%20Contrast%20ratio.md#L14) |
+| **Shadow Elevation Levels** | **3 levels** | Soft (`blur: 30px`), Medium (`blur: 24px`), Hard (`blur: 20px`), tinted with primary chroma `#16a34a`. | [`tokens.css` Lines 227–229](file:///c:/Users/man/Desktop/Workn/tokens.css#L227-L229), [`Design system/Docs/SHADOW SYSTEM.md`](file:///c:/Users/man/Desktop/Workn/Design%20system/Docs/SHADOW%20SYSTEM.md) |
+
+---
+
+## Task 2: Repository, Diagnostics & Layout Numbers
+
+| Parameter / Decision | Value | Reason / Origin | Evidence File Reference |
+| :--- | :--- | :--- | :--- |
+| **Development Server Port** | **3000** | Standard local HTTP port for Next.js app. | [`task-02-repository-and-scaffold/Evidence/03-server-start (1).txt` Line 18](file:///c:/Users/man/Desktop/Workn/task-02-repository-and-scaffold/Evidence/03-server-start%20(1).txt#L18) |
+| **Development Ready Time** | **3.5s** | Initial Next.js 14.2 dev server boot time. | [`task-02-repository-and-scaffold/Evidence/03-server-start (1).txt` Line 15](file:///c:/Users/man/Desktop/Workn/task-02-repository-and-scaffold/Evidence/03-server-start%20(1).txt#L15) |
+| **Initial Compilation Time** | **8.1s** (482 modules) | Cold compilation of root layout, fonts, and client components. | [`task-02-repository-and-scaffold/Evidence/04-first-load.txt` Line 3](file:///c:/Users/man/Desktop/Workn/task-02-repository-and-scaffold/Evidence/04-first-load.txt#L3) |
+| **First Page Load HTTP Timing** | **8,740ms** (Status 200) | Cold HTTP GET request round-trip time from fresh development server start. | [`task-02-repository-and-scaffold/Evidence/04-first-load.txt` Line 6](file:///c:/Users/man/Desktop/Workn/task-02-repository-and-scaffold/Evidence/04-first-load.txt#L6), [`task-02-repository-and-scaffold/docs/performance-note..md`](file:///c:/Users/man/Desktop/Workn/task-02-repository-and-scaffold/docs/performance-note..md) |
+| **Heading Responsive Clamp Minimum** | **1.5rem** (24px) | Floor prevents headline clipping on narrow mobile viewports (<360px). | [`src/components/home/HomeClient.tsx` Line 213](file:///c:/Users/man/Desktop/Workn/src/components/home/HomeClient.tsx#L213) |
+| **Heading Responsive Clamp Preferred** | **5vw** | Scaling rate maintains balanced proportional viewport fill. | [`src/components/home/HomeClient.tsx` Line 213](file:///c:/Users/man/Desktop/Workn/src/components/home/HomeClient.tsx#L213) |
+| **Heading Responsive Clamp Maximum** | **3.0rem** (48px) | Ceiling prevents headline runaway on wide desktop displays. | [`src/components/home/HomeClient.tsx` Line 213](file:///c:/Users/man/Desktop/Workn/src/components/home/HomeClient.tsx#L213) |
+| **Main Heading Max Container Width** | **800px** | Enforces comfortable reading line length and soft clause wrapping. | [`src/components/home/HomeClient.tsx` Line 199](file:///c:/Users/man/Desktop/Workn/src/components/home/HomeClient.tsx#L199) |
+| **Button Padding** | **12px / 32px** (`0.75rem / 2rem`) | `var(--space-3)` vertical, `var(--space-8)` horizontal for >48px touch target. | [`src/components/home/HomeClient.tsx` Line 68](file:///c:/Users/man/Desktop/Workn/src/components/home/HomeClient.tsx#L68) |
+| **Button Corner Radius** | **10px** (`var(--radius-md)`) | Professional soft architectural radius. | [`src/components/home/HomeClient.tsx` Line 69](file:///c:/Users/man/Desktop/Workn/src/components/home/HomeClient.tsx#L69) |
+| **Marketing Tagline Word Count** | **4 words** | *"Workspace management made simple"* (spec limit: under 10 words). | [`src/app/page.tsx` Line 6](file:///c:/Users/man/Desktop/Workn/src/app/page.tsx#L6) |
+| **Git Commit History Spread** | **7+ distinct days** | 2026-10-25 to 2026-11-01 (spec minimum: 12 commits on 3 days). | [`task-02-repository-and-scaffold/Evidence/15-git-log-graph.txt`](file:///c:/Users/man/Desktop/Workn/task-02-repository-and-scaffold/Evidence/15-git-log-graph.txt) |
+
+---
+
+## Tasks 3, 4 & 5 (To be populated as numbers are chosen)
+
+| Parameter / Decision | Value | Reason / Origin | Evidence File Reference |
+| :--- | :--- | :--- | :--- |
+| **Task 3: Full Name Length Range** | **3 to 80 characters** | Blocks 1–2 char throwaway entries and prevents receipt/table overflow; blocks 2-letter legal names (*Jo*, *Li*). | [`src/components/auth/AuthClient.tsx` Lines 101–102](file:///c:/Users/man/Desktop/Workn/src/components/auth/AuthClient.tsx#L101-L102), [`task-03-client-validation/docs/validation-rules.md`](file:///c:/Users/man/Desktop/Workn/task-03-client-validation/docs/validation-rules.md) |
+| **Task 3: Phone Number Length Range** | **10 to 11 digits** | Standard Nigerian mobile number format (`0803...` or `803...` after `Number()` conversion). | [`src/components/auth/AuthClient.tsx` Line 96](file:///c:/Users/man/Desktop/Workn/src/components/auth/AuthClient.tsx#L96), [`task-03-client-validation/docs/validation-rules.md`](file:///c:/Users/man/Desktop/Workn/task-03-client-validation/docs/validation-rules.md) |
+| **Task 3: Password Length Range** | **8 to 72 characters** | NIST SP 800-63B minimum (8) and bcrypt truncation ceiling (72). | [`src/components/auth/AuthClient.tsx` Lines 130–131](file:///c:/Users/man/Desktop/Workn/src/components/auth/AuthClient.tsx#L130-L131), [`task-03-client-validation/docs/validation-rules.md`](file:///c:/Users/man/Desktop/Workn/task-03-client-validation/docs/validation-rules.md) |
+| **Task 4: Bcrypt Cost Factor** | **12 rounds** | ^{12} = 4,096$ key derivation rounds balancing <500ms login latency with industrial brute-force resistance. | [task-04-server-security/evidence/07-hash-twice-different.txt](file:///c:/Users/man/Desktop/Workn/task-04-server-security/evidence/07-hash-twice-different.txt) |
+| **Task 4: Bcrypt Timing (Builder CPU)** | **451.95 ms** | Average execution time over 5 runs on Builder CPU (Node v24.19.0, Windows x64). | [task-04-server-security/evidence/08-timing-argon-vs-sha.txt](file:///c:/Users/man/Desktop/Workn/task-04-server-security/evidence/08-timing-argon-vs-sha.txt), [task-04-server-security/docs/hashing.md](file:///c:/Users/man/Desktop/Workn/task-04-server-security/docs/hashing.md) |
+| **Task 4: SHA-256 Timing (Builder CPU)** | **0.001712 ms** (1.712 micros) | Average execution time over 100,000 iterations on Builder CPU. | [task-04-server-security/evidence/08-timing-argon-vs-sha.txt](file:///c:/Users/man/Desktop/Workn/task-04-server-security/evidence/08-timing-argon-vs-sha.txt), [task-04-server-security/docs/hashing.md](file:///c:/Users/man/Desktop/Workn/task-04-server-security/docs/hashing.md) |
+| **Task 4: Hashing Speed Disparity Ratio** | **264,041x** | SHA-256 runs 264,041 times faster than bcrypt on the same hardware, demonstrating why fast hashing destroys password security. | [task-04-server-security/evidence/08-timing-argon-vs-sha.txt](file:///c:/Users/man/Desktop/Workn/task-04-server-security/evidence/08-timing-argon-vs-sha.txt) |
+| **Task 4: Single-Core Throughput (Builder CPU)** | **2.21 guesses/sec** (bcrypt) vs **584,221 guesses/sec** (SHA-256) | Single-thread brute-force rate derived from machine timing. | [task-04-server-security/evidence/08-timing-argon-vs-sha.txt](file:///c:/Users/man/Desktop/Workn/task-04-server-security/evidence/08-timing-argon-vs-sha.txt) |
+| **Task 4: 8x RTX 4090 GPU Cracking Time (62^8 combinations)** | **18.2 minutes** (SHA-256) vs **8.6 years** (bcrypt) | Proves computational collapse of fast algorithms vs security of memory-hard adaptive hashing. | [task-04-server-security/evidence/08-timing-argon-vs-sha.txt](file:///c:/Users/man/Desktop/Workn/task-04-server-security/evidence/08-timing-argon-vs-sha.txt), [task-04-server-security/docs/hashing.md](file:///c:/Users/man/Desktop/Workn/task-04-server-security/docs/hashing.md) |
+| **Task 4: Rate Limit Threshold & Window** | *Pending Task 4* | Selected window in minutes and request cap. | `task-04-server-security/docs/rate-limiting.md` |
+| **Task 4: Email Code Expiry** | *Pending Task 4* | Selected code expiry window. | `task-04-server-security/docs/verification-design.md` |
+| **Task 5: Deletion Grace Period** | *Pending Task 5* | Account deletion soft-delete retention window. | `task-05-sessions-compliance-defence/docs/retention-matrix.md` |
+

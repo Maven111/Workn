@@ -1,0 +1,45 @@
+================================================================================
+TASK 4 STEP 3: SCHEMA DRIFT ERROR CAPTURED
+================================================================================
+Test: Change the schema file without migrating, run application/query, capture client error.
+Field added to prisma/schema.prisma: driftTestField String?
+Status: Unmigrated (Never applied to PostgreSQL catalog)
+
+--------------------------------------------------------------------------------
+COMMAND RUN:
+--------------------------------------------------------------------------------
+node scripts\test-drift-error.mjs
+
+--------------------------------------------------------------------------------
+CLIENT ERROR TERMINAL OUTPUT:
+--------------------------------------------------------------------------------
+Attempting to query User table with unmigrated schema field "driftTestField"...
+=== PRISMA CLIENT SCHEMA DRIFT ERROR CAPTURED ===
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation:
+
+
+The column `User.driftTestField` does not exist in the current database.
+    at Un.handleRequestError (C:\Users\man\Desktop\Workn\node_modules\@prisma\client\runtime\library.js:121:7447)
+    at Un.handleAndLogRequestError (C:\Users\man\Desktop\Workn\node_modules\@prisma\client\runtime\library.js:121:6771)
+    at Un.request (C:\Users\man\Desktop\Workn\node_modules\@prisma\client\runtime\library.js:121:6478)
+    at async l (C:\Users\man\Desktop\Workn\node_modules\@prisma\client\runtime\library.js:130:9644)
+    at async main (file:///C:/Users/man/Desktop/Workn/scripts/test-drift-error.mjs:6:16) {
+  code: 'P2022',
+  clientVersion: '6.4.1',
+  meta: { modelName: 'User', column: 'User.driftTestField' }
+}
+
+--------------------------------------------------------------------------------
+WHICH TWO THINGS HAVE GONE OUT OF STEP:
+--------------------------------------------------------------------------------
+The two things that have diverged out of step are:
+1. The application's ORM model layer (Prisma Client compiled from schema.prisma), which constructs SQL SELECT queries expecting 'driftTestField' to exist on the 'User' relation.
+2. The persistent PostgreSQL catalog (Supabase database public.User table schema), where no column named 'driftTestField' was ever created via DDL migration.
+
+When the application attempts to read from the User table, the database catalog rejects the query with PostgreSQL error 42703 (undefined_column), bubbling up through Prisma as a fatal runtime P2022 exception.
+
+--------------------------------------------------------------------------------
+THE FIX:
+--------------------------------------------------------------------------------
+Reverted the unmigrated 'driftTestField' from prisma/schema.prisma, recompiled the Prisma client with 'npx prisma generate', and re-run the application query to verify full consensus between ORM client and database.

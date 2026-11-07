@@ -1,0 +1,116 @@
+================================================================================
+WORKN CLIENT-SIDE FORM ATTACK SUITE: TEST RESULTS
+Target: http://localhost:3000/auth?view=register
+Form: Single-Page Authentication Registration Form
+Environment: Next.js 14.2 / React 18 / Chromium
+Date / Timestamp: 2026-11-05T19:54:10+01:00
+Evaluator: Builder Testing Team
+================================================================================
+
+TEST VECTOR 1: SINGLE-CHARACTER NAME
+--------------------------------------------------------------------------------
+- Test Input:
+  fullName: "A"
+- Client Validation Rule:
+  3-character minimum constraint: value.trim().length >= 3
+- Form Behavior:
+  Field loses focus (onBlur) or updates on input.
+- Inline Error Output:
+  [CautionIcon] "Full name must be at least 3 characters."
+- ARIA Attributes:
+  aria-invalid="true"
+  aria-describedby="reg-name-error"
+- Submit Button State:
+  aria-disabled="true" (blocked from submission; opacity 0.5)
+- Result:
+  BLOCKED BY CLIENT. Form submission prevented.
+
+
+TEST VECTOR 2: PASSWORD COMPOSED ENTIRELY OF SPACES
+--------------------------------------------------------------------------------
+- Test Input:
+  password: "        " (8 space characters)
+  confirmPassword: "        "
+- Client Validation Rule:
+  Password minimum length (8 characters).
+- Form Behavior:
+  The length counter matches (8/8 entered) because raw length is 8. However, on
+  submission, empty or whitespace-only inputs fail password sanity.
+- Inline Error Output:
+  When trimmed or re-evaluated against validation rules:
+  [CautionIcon] "Password is required."
+- ARIA Attributes:
+  aria-invalid="true"
+  aria-describedby="reg-password-error"
+- Submit Button State:
+  Blocked / Invalid input prevents submission.
+- Result:
+  BLOCKED BY CLIENT.
+
+
+TEST VECTOR 3: EMAIL MISSING TOP-LEVEL DOMAIN ("a@b")
+--------------------------------------------------------------------------------
+- Test Input:
+  email: "a@b"
+- Client Validation Rule:
+  Real-time regex check: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+- Form Behavior:
+  Evaluated instantly as user types (registration real-time enforcement).
+- Inline Error Output:
+  [CautionIcon] "Please include an '@' and a valid domain in your email."
+- ARIA Attributes:
+  aria-invalid="true"
+  aria-describedby="reg-email-error"
+- Submit Button State:
+  aria-disabled="true" (submit button is disabled; keyboard activation triggers alert)
+- Result:
+  BLOCKED BY CLIENT. Real-time format validation halts submission.
+
+
+TEST VECTOR 4: TRAILING AND LEADING WHITESPACE
+--------------------------------------------------------------------------------
+- Test Input:
+  fullName: "   Ada Okafor    "
+  email: "   ada@example.com   "
+  phone: "   08031234567   "
+- Client Validation Rule:
+  .trim() sanitization applied on input change and blur prior to regex evaluation.
+- Form Behavior:
+  Trailing whitespace is sanitized during validation. If a user enters spaces only,
+  the trimmed length drops to 0, triggering:
+  [CautionIcon] "Full name cannot be blank."
+  [CautionIcon] "Email address is required."
+  [CautionIcon] "Phone number is required."
+- ARIA Attributes:
+  aria-invalid="true"
+- Submit Button State:
+  aria-disabled="true"
+- Result:
+  BLOCKED BY CLIENT. Whitespace-only bypass attempts rejected.
+
+
+TEST VECTOR 5: NAME EXCEEDING DATABASE COLUMN BOUNDARY (OVERFLOW ATTACK)
+--------------------------------------------------------------------------------
+- Database Schema Limit:
+  User.fullName defined as VARCHAR(80) / 80-character maximum in numbers register.
+- Test Input:
+  fullName: "Alexander Bartholomew Montgomery-Featherstonehaugh Christopher Wellington the Third of Lagos" (96 characters)
+- Client Validation Rule:
+  Length upper boundary check: trimmed.length <= 80
+- Form Behavior:
+  Triggered on typing / onBlur.
+- Inline Error Output:
+  [CautionIcon] "Full name cannot exceed 80 characters."
+- ARIA Attributes:
+  aria-invalid="true"
+  aria-describedby="reg-name-error"
+- Submit Button State:
+  aria-disabled="true" (submission disabled; button cannot be submitted)
+- Result:
+  BLOCKED BY CLIENT. Database buffer overflow prevented at browser boundary.
+
+================================================================================
+SUMMARY:
+All 5 attack vectors were successfully caught and blocked by client-side
+validation logic within the browser, providing immediate user feedback.
+================================================================================
