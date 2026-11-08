@@ -52,3 +52,4 @@ To request complete deletion of your personal account under NDPA 2023 Section 34
 ## 6. How Broken Privacy Promises Get Written
 
 Such promises get written when marketing or compliance copywriters borrow aspirational privacy boilerplate without consulting database engineers or reviewing statutory retention obligations. The author attempts to project maximum customer trust by promising absolute immediate erasure, unaware that financial regulations and backup architectures make instantaneous total erasure technically impossible and legally unlawful.
+

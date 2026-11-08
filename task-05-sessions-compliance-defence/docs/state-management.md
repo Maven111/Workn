@@ -41,8 +41,6 @@ When the user clicks "Forgot password?", the reset input is immediately pre-fill
 ### Was a library needed or added because it is expected?
 **An external library was NOT needed.**
 
-In many junior-to-mid engineering portfolios, heavy libraries like Redux Toolkit, MobX, or even Zustand are added reflexively simply because they appear on job descriptions or tutorial roadmaps. 
-
 For Workn's current scope:
 1. **Unnecessary Bundle Overhead**: Introducing Redux Toolkit adds approximately 40–50 kB of minified JavaScript to the client bundle, hurting Initial Server Response and First Contentful Paint (FCP) metrics on 3G/4G networks in Lagos.
 2. **Boilerplate Ceremony**: Setting up global store providers, action creators, reducers, and selectors for local authentication inputs adds cognitive complexity and indirection without adding any tangible capability.

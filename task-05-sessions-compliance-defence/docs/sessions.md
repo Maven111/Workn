@@ -1,6 +1,6 @@
 # Session Architecture, Security Guarantees & Threat Modelling
 
-## 1. Executive Summary
+## 1. Summary
 
 In Workn's security model, authentication establishes identity (who the user is), while session management preserves that identity across stateless HTTP requests. 
 ---

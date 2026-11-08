@@ -63,3 +63,4 @@ The retention framework is governed by:
   - Both Recital 26 of GDPR and Section 3 of the Nigeria Data Protection Act 2023 define personal data strictly as information relating to an *identified or identifiable natural person*.
   - When personal identifiers are irreversibly decoupled (the raw email and name are replaced with pseudonymous hashes, phone numbers set to null, and direct mappings destroyed), the record ceases to be personal data under the law.
   - Anonymous statistical records are outside the scope of data protection legislation and may be retained indefinitely for business intelligence, architectural capacity planning, and operational modeling.
+

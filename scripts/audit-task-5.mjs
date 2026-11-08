@@ -136,3 +136,4 @@ console.log(`AUDIT SUMMARY: Automated Required Pass: ${automatedPass} | Automate
 console.log(`Pending Manual Screenshots by Builder: ${pendingManual}`);
 console.log(`Pending Builder-Only Requirements:     ${pendingBuilderOnly}`);
 console.log('='.repeat(80));
+

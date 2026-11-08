@@ -33,3 +33,4 @@ Real defects diagnosed, resolved, and documented during Task 5 implementation. E
 - **Lines**: 15–35
 - **Description**: Initial scaffolding relied exclusively on middleware URL prefix matching (`/admin`), which only checked whether *a* user was authenticated, not whether they possessed the `ADMIN` role. An ordinary member who copied or pasted the direct `/admin` URL could view privileged facility oversight pages.
 - **Fix**: Implemented strict server-side authorization in `AdminPage` using `getCurrentUser()`: if `user.role !== 'ADMIN'`, the server refuses page rendering, returns HTTP 403, and displays a dedicated Access Denied alert explaining that administrative privileges are required.
+
