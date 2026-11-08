@@ -48,7 +48,7 @@ This task establishes an uncompromised defensive posture across the data layer, 
 - **Decoupled Asynchronous Dispatch**: Decouples email delivery to a background job queue, reducing user registration latency from **206.02 ms** down to **16.47 ms** (12.5x speedup).
 - **Deliberate SMTP Failure & Fix**: Documented connection refusal on misconfigured host (`16-smtp-failure.txt`) and resolved it via authenticated ESMTP relay (`17-smtp-success.txt`).
 - **All Three Failure Modes Enforced**: Verified expired code, wrong code, and reused code failure modes against PostgreSQL state.
-- **Token-Styled Presentation**: Built email template implementing Task 1 design tokens (Warm Oat `#FBF9F5`, Terracotta `#C85A32`, Forest Green `#2A4B3C`, Syne headings).
+- **Token-Styled Presentation**: Built email template implementing Task 1 design tokens (Space Grotesk headings, Manrope body, Workn Green `#16a34a`, Mint surface canvas `#eefdf0`, Subtle sage border `#d7e6da`).
 - **Reference**: [`docs/verification-design.md`](file:///c:/Users/man/Desktop/Workn/task-04-server-security/docs/verification-design.md), [`docs/email-copy.md`](file:///c:/Users/man/Desktop/Workn/task-04-server-security/docs/email-copy.md).
 
 ---
