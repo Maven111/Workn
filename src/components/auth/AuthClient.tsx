@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useTransition, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { login, register, forgotPassword } from '@/lib/auth/actions';
+import { login, register, forgotPassword, verifyCodeAction } from '@/lib/auth/actions';
 
-type AuthView = 'login' | 'register' | 'forgot-password';
+type AuthView = 'login' | 'register' | 'forgot-password' | 'verify';
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -149,17 +149,21 @@ function AuthContent() {
   const callbackError = searchParams.get('error');
 
   const [activeView, setActiveView] = useState<AuthView>(() => {
-    if (queryView === 'register' || queryView === 'forgot-password') {
+    if (queryView === 'register' || queryView === 'forgot-password' || queryView === 'verify') {
       return queryView;
     }
     return 'login';
   });
 
   useEffect(() => {
-    if (queryView === 'register' || queryView === 'forgot-password' || queryView === 'login') {
+    if (queryView === 'register' || queryView === 'forgot-password' || queryView === 'login' || queryView === 'verify') {
       setActiveView(queryView);
     }
-  }, [queryView]);
+    const queryEmail = searchParams.get('email');
+    if (queryEmail) {
+      setVerifyEmail(queryEmail);
+    }
+  }, [queryView, searchParams]);
 
 
 
@@ -213,7 +217,17 @@ function AuthContent() {
   const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
   const [isForgotPending, startForgotTransition] = useTransition();
 
+  // State for Verification Code (Task 4 Step 10)
+  const [verifyCode, setVerifyCode] = useState('');
+  const [verifyEmail, setVerifyEmail] = useState(() => searchParams.get('email') || 'sabdussalam@x3mideas-ng.com');
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [verifySuccess, setVerifySuccess] = useState<string | null>(null);
+  const [isVerifyPending, startVerifyTransition] = useTransition();
+
   const switchView = (view: AuthView) => {
+    setVerifyCode('');
+    setVerifyError(null);
+    setVerifySuccess(null);
     setActiveView(view);
     if (view === 'register') {
       setRegSuccess(null);
@@ -232,6 +246,24 @@ function AuthContent() {
   };
 
   // Handlers
+  async function handleVerifySubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setVerifyError(null);
+    setVerifySuccess(null);
+
+    const formData = new FormData();
+    formData.set('email', verifyEmail.trim() || regEmail.trim());
+    formData.set('code', verifyCode);
+
+    startVerifyTransition(async () => {
+      const result = await verifyCodeAction(formData);
+      if (result?.error) {
+        setVerifyError(result.error);
+      } else if (result?.success) {
+        setVerifySuccess(result.message ?? 'Account verified successfully!');
+      }
+    });
+  }
   async function handleLoginSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(null);
@@ -626,6 +658,18 @@ function AuthContent() {
               >
                 Create an account
               </button>
+
+              <div style={{ marginTop: 'var(--space-4)', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  id="go-to-verify"
+                  onClick={() => switchView('verify')}
+                  className="auth-toggle-link"
+                  style={{ fontSize: 'var(--type-body-small-font-size)' }}
+                >
+                  Have a 6-digit confirmation code? Confirm your email &rarr;
+                </button>
+              </div>
             </div>
           )}
 
@@ -672,20 +716,100 @@ function AuthContent() {
                   </div>
                   <div>
                     <p className="type-headline-small" style={{ color: 'var(--color-on-surface)', marginBottom: 'var(--space-2)' }}>
-                      Almost there!
+                      Confirm your email
                     </p>
                     <p className="type-body-medium" style={{ color: 'var(--color-on-surface-variant)' }}>
                       {regSuccess}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => switchView('login')}
-                    className="wk-btn-primary"
-                    style={{ marginTop: 'var(--space-2)', maxWidth: '200px' }}
-                  >
-                    Back to sign in
-                  </button>
+
+                  {verifyError && (
+                    <div
+                      role="alert"
+                      style={{
+                        width: '100%',
+                        padding: 'var(--space-3) var(--space-4)',
+                        borderRadius: 'var(--radius-md)',
+                        backgroundColor: 'var(--color-error-container)',
+                        color: 'var(--color-on-error-container)',
+                        border: '1px solid color-mix(in srgb, var(--color-error) 20%, transparent)',
+                        fontSize: 'var(--type-body-small-font-size)',
+                        textAlign: 'left',
+                      }}
+                    >
+                      {verifyError}
+                    </div>
+                  )}
+
+                  {verifySuccess ? (
+                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                      <div
+                        role="status"
+                        style={{
+                          padding: 'var(--space-3) var(--space-4)',
+                          borderRadius: 'var(--radius-md)',
+                          backgroundColor: 'var(--color-success-container)',
+                          color: 'var(--color-on-success-container)',
+                          fontSize: 'var(--type-body-small-font-size)',
+                        }}
+                      >
+                        {verifySuccess}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => switchView('login')}
+                        className="wk-btn-primary"
+                        style={{ width: '100%' }}
+                      >
+                        Proceed to Sign in
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleVerifySubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                      <div>
+                        <label htmlFor="verify-code-input" className="wk-label" style={{ textAlign: 'left', display: 'block' }}>
+                          6-Digit Confirmation PIN
+                        </label>
+                        <input
+                          id="verify-code-input"
+                          name="code"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]{6}"
+                          maxLength={6}
+                          required
+                          value={verifyCode}
+                          placeholder="123456"
+                          className="wk-input"
+                          style={{
+                            textAlign: 'center',
+                            fontSize: '24px',
+                            fontWeight: 700,
+                            letterSpacing: '8px',
+                            fontFamily: 'monospace',
+                          }}
+                          onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={verifyCode.length !== 6 || isVerifyPending}
+                        className="wk-btn-primary"
+                        style={{ width: '100%' }}
+                      >
+                        {isVerifyPending ? <SpinnerIcon /> : null}
+                        {isVerifyPending ? 'Verifying…' : 'Verify Confirmation Code'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => switchView('login')}
+                        className="auth-outline-btn"
+                        style={{ width: '100%' }}
+                      >
+                        Back to sign in
+                      </button>
+                    </form>
+                  )}
                 </div>
               ) : (
                 <>
@@ -1051,6 +1175,18 @@ function AuthContent() {
                   >
                     Sign in instead
                   </button>
+
+                  <div style={{ marginTop: 'var(--space-4)', textAlign: 'center' }}>
+                    <button
+                      type="button"
+                      id="reg-go-to-verify"
+                      onClick={() => switchView('verify')}
+                      className="auth-toggle-link"
+                      style={{ fontSize: 'var(--type-body-small-font-size)' }}
+                    >
+                      Already have a confirmation PIN? Confirm your email &rarr;
+                    </button>
+                  </div>
                 </>
               )}
             </div>
@@ -1180,6 +1316,127 @@ function AuthContent() {
               )}
             </div>
           )}
+          {/* ============================================================= */}
+          {/* VIEW: EMAIL VERIFICATION (Task 4 Step 10)                     */}
+          {/* ============================================================= */}
+          {activeView === 'verify' && (
+            <div>
+              <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
+                <h1 className="type-headline-medium" style={{ color: 'var(--color-on-surface)', marginBottom: 'var(--space-2)' }}>
+                  Confirm your email
+                </h1>
+                <p className="type-body-medium" style={{ color: 'var(--color-on-surface-variant)' }}>
+                  Enter your email address and the 6-digit confirmation PIN.
+                </p>
+              </div>
+
+              {verifyError && (
+                <div
+                  role="alert"
+                  style={{
+                    marginBottom: 'var(--space-5)',
+                    padding: 'var(--space-3) var(--space-4)',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--color-error-container)',
+                    color: 'var(--color-on-error-container)',
+                    border: '1px solid color-mix(in srgb, var(--color-error) 20%, transparent)',
+                    fontSize: 'var(--type-body-small-font-size)',
+                    textAlign: 'left',
+                  }}
+                >
+                  {verifyError}
+                </div>
+              )}
+
+              {verifySuccess ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', textAlign: 'center' }}>
+                  <div
+                    role="status"
+                    style={{
+                      padding: 'var(--space-4)',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--color-success-container)',
+                      color: 'var(--color-on-success-container)',
+                      fontSize: 'var(--type-body-medium-font-size)',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {verifySuccess}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => switchView('login')}
+                    className="wk-btn-primary"
+                    style={{ width: '100%' }}
+                  >
+                    Proceed to Sign in
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleVerifySubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+                  <div>
+                    <label htmlFor="verify-email-input" className="wk-label">Email address</label>
+                    <input
+                      id="verify-email-input"
+                      type="email"
+                      required
+                      value={verifyEmail}
+                      onChange={(e) => setVerifyEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="wk-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="verify-code-input" className="wk-label">6-Digit Confirmation PIN</label>
+                    <input
+                      id="verify-code-input"
+                      name="code"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      required
+                      value={verifyCode}
+                      placeholder="123456"
+                      className="wk-input"
+                      style={{
+                        textAlign: 'center',
+                        fontSize: '24px',
+                        fontWeight: 700,
+                        letterSpacing: '8px',
+                        fontFamily: 'monospace',
+                      }}
+                      onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={verifyCode.length !== 6 || isVerifyPending}
+                    className="wk-btn-primary"
+                    style={{ width: '100%' }}
+                  >
+                    {isVerifyPending ? <SpinnerIcon /> : null}
+                    {isVerifyPending ? 'Verifying code…' : 'Verify Confirmation Code'}
+                  </button>
+
+                  <div className="wk-divider" style={{ margin: 'var(--space-4) 0' }}>
+                    Or
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => switchView('login')}
+                    className="auth-outline-btn"
+                  >
+                    Back to sign in
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+
         </div>
       </main>
     </>

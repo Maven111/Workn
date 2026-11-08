@@ -1,0 +1,42 @@
+COMMAND:
+node scripts\benchmark-email-dispatch.mjs
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\benchmark-email-dispatch.mjs
+================================================================================
+WORKN BENCHMARK: SYNCHRONOUS DISPATCH VS ASYNC JOB QUEUE
+Platform: win32 x64 | Node: v24.19.0
+================================================================================
+
+1. PATH A: SYNCHRONOUS REGISTRATION DISPATCH (Awaiting SMTP Network Round-Trip)
+   - Iteration 1: 282.10 ms
+   - Iteration 2: 192.09 ms
+   - Iteration 3: 183.73 ms
+   - Iteration 4: 191.53 ms
+   - Iteration 5: 180.68 ms
+   -> Average Latency: 206.02 ms
+
+2. PATH B: ASYNCHRONOUS BACKGROUND JOB QUEUE (Deferred Queue Execution)
+   - Iteration 1: 14.93 ms
+   - Iteration 2: 15.19 ms
+   - Iteration 3: 14.98 ms
+   - Iteration 4: 16.93 ms
+   - Iteration 5: 20.31 ms
+   -> Average Latency: 16.47 ms
+
+================================================================================
+ARCHITECTURAL PERFORMANCE COMPARISON
+================================================================================
+- Latency Reduction:   189.56 ms (12.5x faster response to user)
+- User-Perceived Time: Dropped from ~206 ms down to ~16 ms
+
+Architectural Conclusion:
+Synchronous email transmission directly inside the registration handler binds HTTP request 
+threads to unpredictable third-party network I/O. If the SMTP relay suffers latency spikes, 
+cellular jitter, or rate limiting, the user's browser hangs, frequently triggering impatient 
+re-submissions that compound load. 
+
+By contrast, decoupling email delivery via an asynchronous background queue ensures the HTTP 
+request terminates in purely local database time (~16.5 ms), leaving delivery retries, 
+backoff, and dead-letter handling to dedicated worker processes.
+================================================================================

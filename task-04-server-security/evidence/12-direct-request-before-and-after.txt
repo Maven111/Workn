@@ -1,0 +1,89 @@
+DIRECT REQUEST BEFORE AND AFTER COMPARISON
+--------------------------------------------------------------------------------
+1. THE TRANSMITTED REQUEST (IDENTICAL ACROSS BOTH TESTS):
+--------------------------------------------------------------------------------
+curl -i -X POST "http://localhost:3000/api/auth/register" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/json" \
+  -d "fullName=A&email=attacker-bypass@example.com&phone=invalid-phone&password=spaces8&acceptTerms=false"
+
+Deliberately Invalid Fields Transmitted:
+- fullName:    "A"             (Violates 3-char minimum; Task 3 rule: min 3 chars)
+- email:       "attacker-bypass@example.com"
+- phone:       "invalid-phone" (Violates Nigerian numeric rule; Task 3 rule: 10-11 digits)
+- password:    "spaces8"       (7 characters; violates Task 3 rule: min 8 chars)
+- acceptTerms: "false"         (Violates mandatory legal agreement; Task 3 rule: true)
+
+--------------------------------------------------------------------------------
+2. BEFORE SERVER VALIDATION WAS IMPLEMENTED:
+--------------------------------------------------------------------------------
+HTTP/1.1 500 Internal Server Error
+x-powered-by: Next.js
+content-type: text/html; charset=utf-8
+content-length: 21
+date: Thu, 05 Nov 2026 18:53:21 GMT
+connection: keep-alive
+
+Internal Server Error
+
+Observations in Task 3:
+- The server performed zero semantic inspection on incoming data.
+- React event handlers, regex patterns, and disabled buttons were completely evaded.
+- The server crashed with an unhandled 500 error due to missing boundary handling.
+- Demonstrates: "Client-side validation is NOT security."
+
+--------------------------------------------------------------------------------
+3. AFTER SERVER ZOD BOUNDARY VALIDATION
+--------------------------------------------------------------------------------
+HTTP/1.1 400 Bad Request
+x-powered-by: Next.js
+content-type: application/json; charset=utf-8
+content-length: 379
+date: Sun, 08 Nov 2026 07:21:03 GMT
+connection: keep-alive
+
+{
+  "success": false,
+  "error": "Validation failed at server boundary",
+  "message": "Full name must be at least 3 characters.",
+  "issues": [
+    {
+      "field": "fullName",
+      "message": "Full name must be at least 3 characters."
+    },
+    {
+      "field": "phone",
+      "message": "Phone number must be 10 or 11 digits."
+    },
+    {
+      "field": "password",
+      "message": "Password must be at least 8 characters."
+    },
+    {
+      "field": "acceptTerms",
+      "message": "You must accept the Terms and Conditions to register."
+    }
+  ]
+}
+
+--------------------------------------------------------------------------------
+4. SIDE-BY-SIDE EVALUATION & DEFENSE VERIFICATION:
+--------------------------------------------------------------------------------
+| Evaluation Metric          | Task 3 Baseline State         | Task 4 Hardened State          |
+| :------------------------- | :---------------------------- | :----------------------------- |
+| **HTTP Status Code**       | `500 Internal Server Error`   | `400 Bad Request`              |
+| **Validation Enforcement** | Zero checks performed         | Every Task 3 rule enforced      |
+| **Full Name Check**        | Ignored single character "A"  | Caught: "must be at least 3"    |
+| **Phone Digit Check**      | Ignored alphabetic string     | Caught: "must be 10 or 11 digits"|
+| **Password Length Check**  | Accepted 7-char "spaces8"     | Caught: "must be at least 8"    |
+| **Legal Terms Agreement**  | Ignored "false"               | Caught: "must accept terms"     |
+| **Database Reachability**  | Reached backend unvalidated   | Blocked at boundary before DB   |
+| **Failure Mode**           | Server unhandled exception    | Structured, safe client refusal |
+
+Conclusion:
+Server-side Zod boundary validation completely eliminates the direct bypass vector.
+Any tool or script that ignores the frontend receives deterministic HTTP 400
+rejections without consuming database connections or triggering expensive downstream
+hashing calculations.
+================================================================================
+

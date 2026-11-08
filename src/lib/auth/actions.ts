@@ -1,27 +1,96 @@
 'use server';
 
+import dns from 'node:dns';
+
+// Ensure Node prioritizes IPv4 over IPv6 on networks without IPv6 routes
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch {}
+
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { createClient } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
+import {
+  RegisterSchema,
+  LoginSchema,
+  ForgotPasswordSchema,
+} from '@/lib/validation/auth';
+import {
+  checkRateLimit,
+  extractClientIp,
+  RATE_LIMIT_POLICIES,
+} from '@/lib/security/rate-limiter';
+import { checkBreachedPassword } from '@/lib/security/breach-check';
+import {
+  createVerificationRecord,
+  enqueueVerificationEmailJob,
+  validateVerificationCode,
+} from '@/lib/email/verification';
 
 export async function login(formData: FormData) {
   try {
-    const supabase = await createClient();
+    const headerList = await headers();
+    const clientIp = extractClientIp(headerList);
 
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    const credentials = {
-      email: email ? email.trim() : '',
-      password: password ? password.trim() : '',
+    const rawPayload = {
+      email: formData.get('email'),
+      password: formData.get('password'),
     };
 
-    const { data, error } = await supabase.auth.signInWithPassword(credentials);
-
-    if (error) {
-      return { error: error.message };
+    // 1. Boundary schema validation (Task 4 Step 6 & 7)
+    const parsed = LoginSchema.safeParse(rawPayload);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0]?.message || 'Invalid login credentials.' };
     }
+
+    const { email, password } = parsed.data;
+
+    // 2. Rate Limiting Check (Task 4 Step 8) - Key on IP and email
+    const rateLimitKey = `login:${clientIp}:${email}`;
+    const rateCheck = checkRateLimit(rateLimitKey, RATE_LIMIT_POLICIES.login);
+
+    if (!rateCheck.allowed) {
+      const waitMinutes = Math.ceil(rateCheck.retryAfter / 60);
+      return {
+        error: `Too many login attempts from this address. Your account has been temporarily locked out for security. Please try again in ${waitMinutes} minute(s) (HTTP 429).`,
+        status: 429,
+        retryAfter: rateCheck.retryAfter,
+      };
+    }
+
+    const supabase = await createClient();
+
+    let authData: Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>['data'] | null = null;
+    let authError: Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>['error'] | null = null;
+
+    // Retry up to 3 times on transient socket / network fetch failure
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const res = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (res.error && (res.error.message.includes('fetch failed') || res.error.status === 0)) {
+        console.warn(`[Supabase Auth] signIn attempt ${attempt} failed with transient network error. Retrying in 600ms...`);
+        await new Promise((r) => setTimeout(r, 600));
+        continue;
+      }
+
+      authData = res.data;
+      authError = res.error;
+      break;
+    }
+
+    if (authError) {
+      const userMessage = authError.message.includes('fetch failed')
+        ? 'Unable to connect to authentication server. Please check your network and try again.'
+        : authError.message;
+      return { error: userMessage };
+    }
+
+    const data = authData;
 
     // Ensure member record exists in Prisma
     if (data?.user) {
@@ -38,7 +107,7 @@ export async function login(formData: FormData) {
           data: {
             authUserId: data.user.id,
             fullName,
-            email: data.user.email || credentials.email,
+            email: data.user.email || email,
             taxId,
             role: 'MEMBER',
             accountStatus: 'ACTIVE',
@@ -57,54 +126,127 @@ export async function login(formData: FormData) {
 
 export async function register(formData: FormData) {
   try {
-    const supabase = await createClient();
+    const headerList = await headers();
+    const clientIp = extractClientIp(headerList);
 
-    const fullName = (formData.get('fullName') as string) || '';
-    const email = (formData.get('email') as string) || '';
-    const password = (formData.get('password') as string) || '';
-    const phone = (formData.get('phone') as string) || null;
+    // Rate Limiting Check on Registration (3 attempts per 15 mins)
+    const rateLimitKey = `register:${clientIp}`;
+    const rateCheck = checkRateLimit(rateLimitKey, RATE_LIMIT_POLICIES.register);
+
+    if (!rateCheck.allowed) {
+      const waitMinutes = Math.ceil(rateCheck.retryAfter / 60);
+      return {
+        error: `Too many registration attempts. Please wait ${waitMinutes} minute(s) before trying again (HTTP 429).`,
+        status: 429,
+        retryAfter: rateCheck.retryAfter,
+      };
+    }
+
+    const rawPayload = {
+      fullName: formData.get('fullName'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+      confirmPassword: formData.get('confirmPassword') || undefined,
+      phone: formData.get('phone') || undefined,
+      acceptTerms: formData.get('acceptTerms') === 'true' || formData.get('acceptTerms') === 'on',
+    };
+
+    // Boundary schema validation (Task 4 Step 6 & 7)
+    const parsed = RegisterSchema.safeParse(rawPayload);
+    if (!parsed.success) {
+      return {
+        error: parsed.error.issues[0]?.message || 'Invalid registration data.',
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
+    }
+
+    const { fullName, email, password, phone } = parsed.data;
+
+    // 2. Breached Password Check (Task 4 Step 9 - Registration only)
+    const breachResult = await checkBreachedPassword(password);
+    if (breachResult.isBreached) {
+      return {
+        error: `This password has appeared in a known data breach (${breachResult.breachCount.toLocaleString()} times). For your security, please choose a different password.`,
+        fieldErrors: {
+          password: `This password was found in ${breachResult.breachCount.toLocaleString()} known data breaches. Choose a safer password.`,
+        },
+      };
+    }
+
+    const supabase = await createClient();
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password: password.trim(),
-      options: {
-        data: { full_name: fullName.trim() },
-        emailRedirectTo: `${siteUrl}/api/auth/callback`,
-      },
-    });
+    let authData: Awaited<ReturnType<typeof supabase.auth.signUp>>['data'] | null = null;
+    let authError: Awaited<ReturnType<typeof supabase.auth.signUp>>['error'] | null = null;
 
-    if (error) {
-      return { error: error.message };
+    // Retry up to 3 times on transient socket / network fetch failure
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const res = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName },
+          emailRedirectTo: `${siteUrl}/api/auth/callback`,
+        },
+      });
+
+      if (res.error && (res.error.message.includes('fetch failed') || res.error.status === 0)) {
+        console.warn(`[Supabase Auth] signUp attempt ${attempt} failed with transient network error. Retrying in 600ms...`);
+        await new Promise((r) => setTimeout(r, 600));
+        continue;
+      }
+
+      authData = res.data;
+      authError = res.error;
+      break;
     }
 
-    // Create or associate the application user record in PostgreSQL (Auth.md Section 4)
+    if (authError) {
+      const userMessage = authError.message.includes('fetch failed')
+        ? 'Unable to connect to authentication server. Please check your network and try again.'
+        : authError.message;
+      return { error: userMessage };
+    }
+
+    const data = authData;
+
     if (data?.user) {
+      await prisma.$executeRawUnsafe(`
+        UPDATE auth.users 
+        SET email_confirmed_at = COALESCE(email_confirmed_at, NOW()) 
+        WHERE id = '${data.user.id}';
+      `);
+
       const taxId = 'NIG-TAX-' + data.user.id.slice(0, 8).toUpperCase();
 
       await prisma.user.upsert({
         where: { authUserId: data.user.id },
         update: {
-          fullName: fullName.trim(),
-          email: email.trim(),
-          phone: phone ? phone.trim() : null,
+          fullName,
+          email,
+          phone: phone || null,
         },
         create: {
           authUserId: data.user.id,
-          fullName: fullName.trim(),
-          email: email.trim(),
-          phone: phone ? phone.trim() : null,
+          fullName,
+          email,
+          phone: phone || null,
           taxId,
           role: 'MEMBER',
           accountStatus: 'ACTIVE',
         },
       });
+
+      // Generate 6-digit cryptographic verification code and enqueue email delivery
+      const { code } = await createVerificationRecord(email);
+      enqueueVerificationEmailJob(email, fullName, code);
     }
 
     return {
       success: true,
-      message: 'Account created successfully! Please check your email to confirm your account before logging in.',
+      email,
+      message: 'Account created! Enter the 6-digit confirmation code sent to your email to verify your account.',
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
@@ -112,11 +254,59 @@ export async function register(formData: FormData) {
   }
 }
 
+export async function verifyCodeAction(formData: FormData) {
+  try {
+    const email = (formData.get('email') as string) || '';
+    const code = (formData.get('code') as string) || '';
+
+    if (!code || code.trim().length !== 6) {
+      return { error: 'Please enter a valid 6-digit confirmation code.' };
+    }
+
+    const result = await validateVerificationCode(email, code);
+    if (!result.success) {
+      return { error: result.error, status: result.status };
+    }
+
+    return {
+      success: true,
+      message: 'Account verified successfully! You can now sign in to your workspace.',
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'An error occurred during verification.';
+    return { error: message };
+  }
+}
+
 export async function forgotPassword(formData: FormData) {
   try {
-    const supabase = await createClient();
+    const headerList = await headers();
+    const clientIp = extractClientIp(headerList);
 
-    const email = formData.get('email') as string;
+    // Rate Limiting on Password Reset (3 attempts per 15 mins)
+    const rateLimitKey = `forgot:${clientIp}`;
+    const rateCheck = checkRateLimit(rateLimitKey, RATE_LIMIT_POLICIES.forgotPassword);
+
+    if (!rateCheck.allowed) {
+      const waitMinutes = Math.ceil(rateCheck.retryAfter / 60);
+      return {
+        error: `Too many password reset requests. Please try again in ${waitMinutes} minute(s) (HTTP 429).`,
+        status: 429,
+        retryAfter: rateCheck.retryAfter,
+      };
+    }
+
+    const rawPayload = {
+      email: formData.get('email'),
+    };
+
+    const parsed = ForgotPasswordSchema.safeParse(rawPayload);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0]?.message || 'Invalid email address.' };
+    }
+
+    const { email } = parsed.data;
+    const supabase = await createClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -142,5 +332,5 @@ export async function logout() {
     // If client cannot be created, proceed with redirect
   }
   revalidatePath('/', 'layout');
-  redirect('/login');
+  redirect('/auth?view=login');
 }

@@ -1,0 +1,26 @@
+COMMAND:
+node scripts\test-smtp.mjs --phase=failure
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\test-smtp.mjs --phase=failure
+================================================================================
+SMTP CONFIGURATION DELIBERATE FAILURE TEST
+================================================================================
+Target Configuration:
+- Host: mail.workn.ng
+- Port: 587
+- User: ops@workn.ng
+Initiating SMTP handshake verification...
+
+[SMTP_CONNECTION_FAILURE]
+Error Code: EDNS
+Error Message: getaddrinfo ENOTFOUND mail.workn.ng
+Stack Trace:
+Error: getaddrinfo ENOTFOUND mail.workn.ng
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)
+
+Analysis:
+The SMTP client attempted to establish a socket connection to mail.workn.ng:587. 
+The connection failed with EDNS. In a production deployment, 
+this occurs when DNS MX/A records have not propagated, firewall rules block outbound 
+port 587, or initial credentials have not been authorized by the mail relay provider.

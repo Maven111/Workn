@@ -1,0 +1,33 @@
+COMMAND:
+node scripts\execute-rate-limit-defeat.mjs
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\execute-rate-limit-defeat.mjs
+================================================================================
+TASK 4 STEP 8: RATE LIMITING LOCKOUT & AUTHENTIC IP DEFEAT TEST
+Target: http://localhost:3000/api/auth/login
+Policy: 5 attempts per 15-minute window (900s)
+================================================================================
+
+--- PHASE 1: SENDING 6 ATTEMPTS FROM IP: 197.210.64.12 ---
+Attempt 1: Status 401 | Limit: 5 | Remaining: 4 | Retry-After: N/A
+Attempt 2: Status 401 | Limit: 5 | Remaining: 3 | Retry-After: N/A
+Attempt 3: Status 401 | Limit: 5 | Remaining: 2 | Retry-After: N/A
+Attempt 4: Status 401 | Limit: 5 | Remaining: 1 | Retry-After: N/A
+Attempt 5: Status 401 | Limit: 5 | Remaining: 0 | Retry-After: N/A
+Attempt 6: Status 429 | Limit: 5 | Remaining: 0 | Retry-After: 899
+-> LOCKOUT REFUSAL CONFIRMED: Too many login attempts from this address. Locked out for 15 minute(s).
+
+--- PHASE 2: DEFEATING RATE LIMIT BY ROTATING IP TO: 102.89.23.45 ---
+Rate limiter remains fully enabled and unmodified on the server.
+Bypass Attempt 1 (from 102.89.23.45): Status 401 | Remaining: 4
+-> RATE LIMIT SUCCESSFULLY DEFEATED: Request was admitted for authentication evaluation.
+   (Received HTTP 401 instead of HTTP 429 Too Many Requests)
+
+================================================================================
+TEST SUMMARY:
+- Initial IP 197.210.64.12: Locked out at Attempt 6 with HTTP 429.
+- Rotated IP 102.89.23.45: Admitted immediately on Attempt 1 with fresh counter quota.
+- Proves: IP-based rate limiting is trivially defeated by client IP rotation.
+================================================================================
+

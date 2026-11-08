@@ -1,0 +1,33 @@
+COMMAND:
+node scripts\benchmark-validation.mjs
+
+TERMINAL OUTPUT:
+C:\Users\man\Desktop\Workn>node scripts\benchmark-validation.mjs
+================================================================================
+WORKN BENCHMARK: REQUEST VALIDATION BOUNDARY TIMING (TASK 4 STEP 6)
+Platform: win32 x64 | Node version: v24.19.0
+Iterations: 100,000
+================================================================================
+
+1. Baseline Timing (Raw unvalidated request read):
+   - Total time: 7.51 ms
+   - Average per request: 0.000075 ms (0.075 microseconds)
+
+2. Validated Timing (Zod boundary validation + transformation):
+   - Total time: 201.87 ms
+   - Average per request: 0.002019 ms (2.019 microseconds)
+
+================================================================================
+VALIDATION BOUNDARY PERFORMANCE ANALYSIS
+================================================================================
+- Added Latency Overhead: 0.001944 ms (1.944 microseconds) per request.
+- Throughput Capacity:   ~495,374 validated requests / second on 1 core.
+
+Conclusion:
+Schema validation at the boundary introduces less than 0.01 milliseconds of latency,
+which is mathematically zero compared to network round-trips (~50-100 ms) and password
+hashing (~450 ms). If a validation check ever causes high latency, it indicates an
+architectural defect such as performing synchronous disk I/O, network requests, or
+database queries inside the validation phase rather than pure in-memory schema parsing.
+================================================================================
+
