@@ -28,6 +28,7 @@ import {
   enqueueVerificationEmailJob,
   validateVerificationCode,
 } from '@/lib/email/verification';
+import { createSession, destroySession } from '@/lib/auth/session';
 
 export async function login(formData: FormData) {
   try {
@@ -84,17 +85,18 @@ export async function login(formData: FormData) {
     }
 
     if (authError) {
-      const userMessage = authError.message.includes('fetch failed')
-        ? 'Unable to connect to authentication server. Please check your network and try again.'
-        : authError.message;
-      return { error: userMessage };
+      if (authError.message.includes('fetch failed')) {
+        return { error: 'Unable to connect to authentication server. Please check your network and try again.' };
+      }
+      // Task 5 Step 3: Generic error message that never names which half failed
+      return { error: 'Invalid email or password. Please check your credentials and try again.' };
     }
 
     const data = authData;
 
-    // Ensure member record exists in Prisma
+    // Ensure member record exists in Prisma and enforce Hard Gating
     if (data?.user) {
-      const existing = await prisma.user.findUnique({
+      let existing = await prisma.user.findUnique({
         where: { authUserId: data.user.id },
       });
 
@@ -103,7 +105,7 @@ export async function login(formData: FormData) {
         const fullName = (metadata.full_name as string) || 'Workn Member';
         const taxId = 'NIG-TAX-' + data.user.id.slice(0, 8).toUpperCase();
 
-        await prisma.user.create({
+        existing = await prisma.user.create({
           data: {
             authUserId: data.user.id,
             fullName,
@@ -114,6 +116,22 @@ export async function login(formData: FormData) {
           },
         });
       }
+
+      // Hard Gating check (Task 5 Step 2 & 3): Unverified accounts cannot log in
+      if (existing.accountStatus !== 'ACTIVE') {
+        return {
+          error: 'Your email address has not been verified. Please verify your email code before signing in.',
+          unverified: true,
+          email,
+        };
+      }
+
+      // Issue fresh cryptographic server session token (Task 5 Step 1)
+      const userAgent = headerList.get('user-agent') || undefined;
+      await createSession(existing.id, {
+        ipAddress: clientIp,
+        userAgent,
+      });
     }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
@@ -326,6 +344,7 @@ export async function forgotPassword(formData: FormData) {
 
 export async function logout() {
   try {
+    await destroySession();
     const supabase = await createClient();
     await supabase.auth.signOut();
   } catch {

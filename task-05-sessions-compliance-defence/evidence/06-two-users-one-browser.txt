@@ -1,0 +1,44 @@
+================================================================================
+WORKN TASK 5 STEP 4: TWO USERS SHARING ONE BROWSER TEST
+================================================================================
+Timestamp:        2026-11-08T19:14:24.986Z
+Test Environment: Shared Physical Workstation (Lekki Hub Dedicated Desk Terminal)
+Threat Model:     Person A logs in, leaves workstation. Person B sits down and logs
+                  in with their credentials without Person A having logged out.
+================================================================================
+
+--- 1. WORKSTATION INITIAL STATE: USER A SIGNS IN ---
+User A:           Chidi Okafor (chidi.okafor@workn.ng)
+User A ID:        636bbfd5-d728-48d3-bb53-ec415e6c6e81
+Session A ID:     e75fccb7-04b7-4f81-b59f-b0745d766f4e
+Browser Cookie:   workn_session=f76f9ae7984068e0...
+Session A Active: Yes (expires: 2026-11-15T19:14:27.869Z)
+
+--- 2. USER A WALKS AWAY; USER B SITS DOWN WITHOUT USER A LOGGING OUT ---
+User B:           Amina Bello (amina.bello@workn.ng)
+Browser State:    Browser currently holds User A's active cookie jar.
+Action:           User B submits login form at /auth?view=login with User B credentials.
+
+--- 3. SERVER-SIDE SESSION TRANSITION & ISOLATION ENFORCEMENT ---
+[Security Event] Detected shared browser session conflict!
+- Previous Session Belongs To: User A (636bbfd5-d728-48d3-bb53-ec415e6c6e81)
+- Incoming Authentication:     User B (0a1f2842-6bcb-458c-abaf-6af90440e329)
+- Defensive Action: Invalidate previous session on this browser device to prevent cross-contamination.
+- Session A Revoked:           Successfully set revokedAt = NOW()
+Session B ID:     63593ef3-25d9-4b54-84b6-936d61b658d0
+Browser Cookie:   workn_session=86c16868a9347923...
+Session B Active: Yes (expires: 2026-11-15T19:14:29.266Z)
+
+--- 4. POST-LOGIN VERIFICATION & IDENTITY AUDIT ---
+Active Authenticated Identity: Amina Bello (amina.bello@workn.ng)
+Identity Resolution Check:    PASS (Strictly User B)
+User A Data Contamination:    PASS (Zero User A records accessible in User B context)
+Session A Final State in DB:   Revoked At: 2026-11-08T19:14:28.817Z
+Replay of Stolen Token A:      REFUSED (revokedAt is not null -> validateSession returns null)
+
+================================================================================
+SECURITY VERDICT: PASS
+- Shared workstation session collision handled cleanly.
+- User A session terminated upon User B authentication from same device.
+- Fresh CSPRNG token issued to User B with zero residual state leakage.
+================================================================================

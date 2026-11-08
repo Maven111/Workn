@@ -38,13 +38,17 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Task 5 Step 4: Middleware reads the session cookie
+  const sessionCookie = request.cookies.get('workn_session')?.value;
+  const isAuthenticated = !!user || !!sessionCookie;
+
   const { pathname } = request.nextUrl;
 
   // Protected routes: redirect unauthenticated users to login
   const protectedPrefixes = ['/dashboard', '/membership', '/bookings', '/payments', '/assistant', '/admin'];
   const isProtected = protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
 
-  if (isProtected && !user) {
+  if (isProtected && !isAuthenticated) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/auth';
     redirectUrl.searchParams.set('view', 'login');
@@ -56,7 +60,7 @@ export async function updateSession(request: NextRequest) {
   const authRoutes = ['/auth', '/login', '/register', '/forgot-password'];
   const isAuthRoute = authRoutes.some((route) => pathname === route || pathname.startsWith(route));
 
-  if (isAuthRoute && user) {
+  if (isAuthRoute && isAuthenticated) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);

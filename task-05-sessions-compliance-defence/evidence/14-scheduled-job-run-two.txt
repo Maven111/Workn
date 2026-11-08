@@ -1,0 +1,18 @@
+================================================================================
+WORKN SCHEDULED PURGE JOB: RUN 2 (IDEMPOTENCY AUDIT - ZERO RE-PURGE)
+================================================================================
+Execution Timestamp:    2026-11-08T19:19:07.664Z
+Simulated Wall Clock:   2026-12-09T19:19:04.548Z
+Condition:              Immediate second invocation on identical database state
+================================================================================
+
+[PURGE JOB START] Scheduled Account Purge Job initiated at 2026-11-08T19:19:07.664Z
+[PURGE JOB CRITERIA] Searching for accounts with scheduledPurgeAt <= 2026-12-09T19:19:04.548Z
+[PURGE JOB AUDIT] Evaluated 0 total deletion requests. 0 eligible for immediate purge.
+[PURGE JOB ZERO-ACTION] Zero eligible accounts expired. System state unchanged.
+[PURGE JOB FINISH] Scheduled Account Purge Job completed at 2026-11-08T19:19:07.899Z in 235ms. Evaluated: 0, Purged: 0. Failures: 0.
+
+================================================================================
+EXECUTION SUMMARY: Duration: 235ms | Accounts Purged: 0 | Sessions Purged: 0
+VERDICT: IDEMPOTENT (Zero mutation on re-execution. Safe to run twice.)
+================================================================================

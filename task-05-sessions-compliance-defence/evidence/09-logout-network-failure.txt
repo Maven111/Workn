@@ -1,0 +1,39 @@
+================================================================================
+WORKN TASK 5 STEP 4: LOGOUT NETWORK FAILURE EDGE CASE REPRODUCTION
+================================================================================
+Timestamp:          2026-11-08T19:15:20.823Z
+User:               Maven Sammarr (sabdussalam@x3mideas-ng.com)
+Active Session ID:  78460749-fbb3-45b3-857b-eaec244c422a
+Client Cookie:      workn_session=fc2a4ba2cc742537...
+Initial DB State:   revokedAt: null (ACTIVE)
+================================================================================
+
+--- 1. USER INITIATES LOGOUT FROM WORKSPACE TERMINAL ---
+[Action] User clicks "Sign Out" button at /dashboard.
+[Network Trace] POST /api/auth/logout dispatched with Cookie: workn_session=fc2a4ba2cc742537...
+
+--- 2. SIMULATING NETWORK CORRUPTION / PACKET DROP ---
+[Network Simulation] Simulating cellular socket drop (ECONNRESET / ERR_INTERNET_DISCONNECTED).
+[Client Log] Fetch error caught: "TypeError: Failed to fetch (Network connection lost)".
+
+--- 3. NAIVE CLIENT BEHAVIOUR (THE FLAW) ---
+[Client Action] Naive handler catches network error, assumes user intent is satisfied:
+  - document.cookie = "workn_session=; max-age=0;"
+  - window.location.href = "/auth?view=login"
+[UI Banner] Interface displays: "You have been signed out successfully."
+[User Perception] User believes their account is completely secured and walks away.
+
+--- 4. POSTGRESQL SERVER-SIDE REALITY AUDIT ---
+Server Received Logout Request:  NO (Dropped on wire)
+Database Row ID:                 78460749-fbb3-45b3-857b-eaec244c422a
+Database sessionTokenHash:       cd90a268755dd29db709d9bbb9fbc9984d9a7093eaa5f36c03909706d3296161
+Database revokedAt Timestamp:    NULL (SESSION STILL FULLY ACTIVE)
+Database expiresAt Timestamp:    2026-11-15T19:15:20.399Z
+
+--- 5. THREAT ANALYSIS & EXPLOITATION PROOF ---
+[Exploit Vector] An attacker who sniffed or extracted raw token "fc2a4ba2cc742537adeb4a3d7c14f580ad8a1fdfe897066a7f4ebf1fb7759c2e"
+replays the session identifier against the API:
+  curl -H "Cookie: workn_session=fc2a4ba2cc742537adeb4a3d7c14f580ad8a1fdfe897066a7f4ebf1fb7759c2e" http://localhost:3000/api/user/profile
+[Server Response] HTTP 200 OK — Full access granted to member bookings and payment history!
+[Conclusion] The interface claimed success, but the server session remained 100% alive.
+================================================================================
