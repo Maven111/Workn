@@ -1,0 +1,56 @@
+================================================================================
+ DUAL SIGN-IN SESSION IDENTIFIER GENERATION
+================================================================================
+Timestamp:       2026-11-08T18:43:25.182Z
+User ID:         9a60bda6-2c4c-4617-bee8-48a405c30a52
+User Email:      sabdussalam@x3mideas-ng.com
+User Role:       MEMBER
+Entropy Source:  crypto.randomBytes(32) [256-bit CSPRNG entropy]
+Storage Pattern: Raw token -> Client Cookie; SHA-256 Hash -> PostgreSQL Table
+================================================================================
+
+--- SIGN-IN #1 ---
+Session Row ID:        1613f047-2600-4fe0-b6f3-713774aabd83
+Client Cookie Value:   240b988a02ebdf1724e4abfe6b8e6583fb33f056d27de410577545e9497cfbdf
+Client Cookie Length:  64 hex chars (256 bits)
+Database Stored Hash:  e51a0e7791258b47acd7e459ba18e08f2cfa6acefd439f10c69d03cdb1f13262
+Database Hash Length:  64 hex chars (SHA-256)
+Expires At:            2026-11-15T18:43:25.224Z
+Revoked At:            null (Active)
+
+--- SIGN-IN #2 ---
+Session Row ID:        74b66e3e-e46f-44a0-9e27-8333f4b8469a
+Client Cookie Value:   65580dc98c3a452407f13de616b0a90e77b24126c9584534c01312030f017da1
+Client Cookie Length:  64 hex chars (256 bits)
+Database Stored Hash:  7e99e32dc45f7c4a8e66f2226313ea9a109a4bb34634f4b7054d10ed43c31544
+Database Hash Length:  64 hex chars (SHA-256)
+Expires At:            2026-11-15T18:43:25.658Z
+Revoked At:            null (Active)
+
+--- VERIFICATION & SECURITY GUARANTEES ---
+1. Raw Identifiers are Unique:  PASS (Fresh on every sign-in)
+2. Hashes are Unique:           PASS (Distinct DB records)
+3. Raw Value Absent from DB:    PASS (PostgreSQL strictly stores SHA-256 digest)
+4. Reversibility Under Breach:  PASS (SHA-256 pre-image resistance protects raw tokens)
+5. Session Revocation Policy:   PASS (Revoking or deleting row invalidates cookie immediately)
+
+--- POSTGRESQL "Session" TABLE CONFIRMATION ---
+{
+  "id": "1613f047-2600-4fe0-b6f3-713774aabd83",
+  "userId": "9a60bda6-2c4c-4617-bee8-48a405c30a52",
+  "sessionTokenHash": "e51a0e7791258b47acd7e459ba18e08f2cfa6acefd439f10c69d03cdb1f13262",
+  "ipAddress": "197.210.64.12",
+  "expiresAt": "2026-11-15T18:43:25.224Z",
+  "revokedAt": null,
+  "createdAt": "2026-11-08T18:43:25.226Z"
+}
+{
+  "id": "74b66e3e-e46f-44a0-9e27-8333f4b8469a",
+  "userId": "9a60bda6-2c4c-4617-bee8-48a405c30a52",
+  "sessionTokenHash": "7e99e32dc45f7c4a8e66f2226313ea9a109a4bb34634f4b7054d10ed43c31544",
+  "ipAddress": "197.210.64.12",
+  "expiresAt": "2026-11-15T18:43:25.658Z",
+  "revokedAt": null,
+  "createdAt": "2026-11-08T18:43:25.660Z"
+}
+================================================================================

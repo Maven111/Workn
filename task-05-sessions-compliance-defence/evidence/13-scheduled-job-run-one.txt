@@ -1,0 +1,17 @@
+================================================================================
+WORKN SCHEDULED PURGE JOB: RUN 1 (EXPIRED GRACE PERIOD EXECUTION)
+================================================================================
+Execution Timestamp:    2026-11-08T19:19:04.548Z
+Simulated Wall Clock:   2026-12-09T19:19:04.548Z (+31 days)
+Statutory Grace Period: 30 days (NDPA / GDPR compliant)
+================================================================================
+
+[PURGE JOB START] Scheduled Account Purge Job initiated at 2026-11-08T19:19:04.548Z
+[PURGE JOB CRITERIA] Searching for accounts with scheduledPurgeAt <= 2026-12-09T19:19:04.548Z
+[PURGE JOB AUDIT] Evaluated 1 total deletion requests. 1 eligible for immediate purge.
+[PURGE EXECUTED] User 61720047-0d87-4b98-8204-e6613f8e34d7 purged atomically. Sessions deleted: 1.
+[PURGE JOB FINISH] Scheduled Account Purge Job completed at 2026-11-08T19:19:07.250Z in 2702ms. Evaluated: 1, Purged: 1. Failures: 0.
+
+================================================================================
+EXECUTION SUMMARY: Duration: 2702ms | Accounts Purged: 1 | Sessions Purged: 1
+================================================================================

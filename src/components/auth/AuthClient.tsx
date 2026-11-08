@@ -168,10 +168,14 @@ function AuthContent() {
 
 
   // State for Login (format validated ONLY on submit)
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginShowPassword, setLoginShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginFieldErrors, setLoginFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [isLoginPending, startLoginTransition] = useTransition();
+
+  // State for Forgot Password (with client-side state carryover from login form)
+  const [forgotEmail, setForgotEmail] = useState('');
 
   // State for Register (format validated in REAL TIME as user types)
   const [regFullName, setRegFullName] = useState('');
@@ -239,6 +243,10 @@ function AuthContent() {
     if (view === 'forgot-password') {
       setForgotSuccess(null);
       setForgotError(null);
+      // State Management: Pre-fill reset form with email typed during failed login without server round-trip
+      if (loginEmail.trim()) {
+        setForgotEmail(loginEmail.trim());
+      }
     }
     const params = new URLSearchParams(searchParams.toString());
     params.set('view', view);
@@ -570,6 +578,7 @@ function AuthContent() {
                     type="email"
                     autoComplete="email"
                     required
+                    value={loginEmail}
                     placeholder="you@example.com"
                     className="wk-input"
                     aria-invalid={Boolean(loginFieldErrors.email)}
@@ -579,7 +588,8 @@ function AuthContent() {
                         setLoginFieldErrors((prev) => ({ ...prev, email: 'Email address is required.' }));
                       }
                     }}
-                    onChange={() => {
+                    onChange={(e) => {
+                      setLoginEmail(e.target.value);
                       if (loginFieldErrors.email) {
                         setLoginFieldErrors((prev) => ({ ...prev, email: undefined }));
                       }
@@ -1277,6 +1287,8 @@ function AuthContent() {
                         type="email"
                         autoComplete="email"
                         required
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
                         placeholder="you@example.com"
                         className="wk-input"
                       />
