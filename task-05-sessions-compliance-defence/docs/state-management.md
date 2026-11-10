@@ -1,14 +1,8 @@
 # Front-End State Management Architecture & Honest Evaluation
 
-## 1. Executive Summary
+## 1. Real Implementation: Zero-Roundtrip Cross-View State Carryover
 
-This document evaluates the front-end state management architecture of Workn, analyzes the concrete cross-form state carryover implemented in `src/components/auth/AuthClient.tsx`, and answers honestly whether an external state management library was required or merely conventional ceremony.
-
----
-
-## 2. Real Implementation: Zero-Roundtrip Cross-View State Carryover
-
-### 2.1 The Problem
+### 1.1 The Problem
 When a member types their email address into the login form (`/auth?view=login`), attempts authentication, and fails (or forgets their password), the natural user journey is to click **"Forgot password?"**.
 
 In a naive or unmanaged frontend:
@@ -16,7 +10,7 @@ In a naive or unmanaged frontend:
 - The user lands on an empty reset form and is forced to re-type their entire email address.
 - On mobile devices, this friction leads to user frustration and abandoned recovery attempts.
 
-### 2.2 Workn's Lightweight Client State Solution
+### 1.2 Workn's Lightweight Client State Solution
 Workn implements lightweight, reactive component state synchronization:
 ```tsx
 // Preserves typed email across authentication sub-views in React state
@@ -36,7 +30,7 @@ When the user clicks "Forgot password?", the reset input is immediately pre-fill
 
 ---
 
-## 3. Honest Evaluation: Was an External Library Needed?
+## 2. Honest Evaluation: Was an External Library Needed?
 
 ### Was a library needed or added because it is expected?
 **An external library was NOT needed.**
@@ -48,17 +42,17 @@ For Workn's current scope:
 
 ---
 
-## 4. At What Point Would Workn Genuinely Require an External State Library?
+## 3. At What Point Would Workn Genuinely Require an External State Library?
 
 Workn would transition from native React state to a dedicated state management library (such as **Zustand** or **TanStack Query**) when the platform scales to the following concrete engineering requirements:
 
-### 4.1 Real-Time Interactive Hub Floorplans
+### 3.1 Real-Time Interactive Hub Floorplans
 When Workn introduces graphical SVG interactive floorplans for the Admiralty Way (Lekki) or Victoria Island hubs:
 - A user clicks to select a hot desk, while another user simultaneously selects a neighboring pod.
 - The floorplan requires optimistic seat locking, multi-resource selection (e.g. 1 hot desk + 1 locker + 1 monitor add-on), and live WebSocket stream updates from other members booking across Lagos.
 - Decoupled components (the interactive map canvas, the pricing sidebar, the amenity drawer, and the mini-cart checkout badge) must share high-frequency state updates without prop-drilling or cascading full-tree re-renders.
 
-### 4.2 Multi-Step Booking & Split Invoicing Pipeline
+### 3.2 Multi-Step Booking & Split Invoicing Pipeline
 If enterprise corporate teams book multi-day workshop spaces involving catering, A/V technician add-ons, and split invoicing across multiple corporate credit cards, a centralized finite state machine (e.g. XState or Zustand) would be warranted to manage the complex rollback and partial payment states.
 
 Until those specific operational requirements exist, keeping the state architecture lightweight and native to React is the correct senior engineering decision.
