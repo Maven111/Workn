@@ -53,6 +53,7 @@ console.log('\n--- DELIVERABLE FILE AUDIT ---');
 for (const item of deliverables) {
   const fullPath = path.join(baseDir, item.path);
   // Also check if directory with extensions exist (e.g. 03-soft-gating-flow.mp4 or directory)
+  let actualPath = fullPath;
   let exists = fs.existsSync(fullPath);
   if (!exists && !path.extname(item.path)) {
     // Check if an extension exists
@@ -60,12 +61,16 @@ for (const item of deliverables) {
     const base = path.basename(fullPath);
     if (fs.existsSync(dir)) {
       const files = fs.readdirSync(dir);
-      exists = files.some(f => f.startsWith(base));
+      const match = files.find(f => f.startsWith(base));
+      if (match) {
+        exists = true;
+        actualPath = path.join(dir, match);
+      }
     }
   }
 
   if (exists) {
-    const stats = fs.statSync(fullPath);
+    const stats = fs.statSync(actualPath);
     const size = stats.size;
     console.log(`✅ [PRESENT] ${item.path.padEnd(48)} (${size} bytes) - ${item.description}`);
     if (item.required) automatedPass++;
