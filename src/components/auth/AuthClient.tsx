@@ -336,12 +336,24 @@ function AuthContent() {
     const numericPhone = Number(regPhone.trim());
     formData.set('phone', String(numericPhone));
 
+    // Task 5 Step 2: Gating mode toggle
+    const gatingMode = searchParams.get('mode') === 'soft' ? 'soft' : 'hard';
+    formData.set('gatingMode', gatingMode);
+
     startRegTransition(async () => {
       const result = await register(formData);
       if (result?.error) {
         setRegError(result.error);
       } else if (result?.success) {
         setRegSuccess(result.message ?? 'Account created successfully. Check your email to verify.');
+        if ((result as any).softGated && (result as any).redirect) {
+          window.location.href = (result as any).redirect;
+          return;
+        }
+        if (result.email) {
+          setVerifyEmail(result.email);
+        }
+        switchView('verify');
       }
     });
   }

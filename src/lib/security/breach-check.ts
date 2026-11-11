@@ -22,6 +22,12 @@ export async function checkBreachedPassword(password: string): Promise<BreachChe
     return { isBreached: false, breachCount: 0 };
   }
 
+  // In development mode, bypass the breach check so developers can use any password
+  // for testing registration flows without false positives or network blocks.
+  if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_STRICT_BREACH_CHECK !== 'true') {
+    return { isBreached: false, breachCount: 0 };
+  }
+
   try {
     // 1. Compute SHA-1 hash locally
     const sha1Hash = createHash('sha1').update(password).digest('hex').toUpperCase();

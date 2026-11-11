@@ -56,11 +56,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Auth routes: redirect already-authenticated users away from login/register
+  // Auth routes: only redirect to dashboard if the user is verified active and did not request an explicit auth view
   const authRoutes = ['/auth', '/login', '/register', '/forgot-password'];
   const isAuthRoute = authRoutes.some((route) => pathname === route || pathname.startsWith(route));
+  const requestedView = request.nextUrl.searchParams.get('view');
 
-  if (isAuthRoute && isAuthenticated) {
+  // Prevent infinite redirect loops: if user explicitly requests a view (e.g. view=register or view=login), let them access it!
+  if (isAuthRoute && user && !requestedView && pathname !== '/auth') {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);

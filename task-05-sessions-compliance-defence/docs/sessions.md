@@ -80,7 +80,13 @@ To minimize damage in the event of token exposure, Workn layers five defensive c
 
 ---
 
-## 6. Verification Evidence Reference
+## 6. Password Reset vs. Ordinary Password Change: Invalidation Analysis
+
+An ordinary password change is often an intentional user routine where keeping current device sessions active is tolerable, whereas a password reset indicates an account recovery or credential loss scenario where prior sessions must be assumed compromised and terminated immediately. Highly regulated industries such as banking, fintech (e.g., Paystack/Flutterwave), healthcare, and defense treat both routine password changes and password resets identically by mandating global session termination across all devices on any credential mutation.
+
+---
+
+## 7. Verification Evidence Reference
 
 - **Dual Fresh Token Generation**: [`task-05-sessions-compliance-defence/evidence/01-two-session-ids.txt`](file:///c:/Users/man/Desktop/Workn/task-05-sessions-compliance-defence/evidence/01-two-session-ids.txt)
 - **Token Parameters**: Registered in [`Docs/numbers-register.md`](file:///c:/Users/man/Desktop/Workn/Docs/numbers-register.md) lines 60–63 (256-bit CSPRNG entropy, 7-day TTL).

@@ -1,12 +1,5 @@
 'use server';
 
-import dns from 'node:dns';
-
-// Ensure Node prioritizes IPv4 over IPv6 on networks without IPv6 routes
-try {
-  dns.setDefaultResultOrder('ipv4first');
-} catch {}
-
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
@@ -259,6 +252,26 @@ export async function register(formData: FormData) {
       // Generate 6-digit cryptographic verification code and enqueue email delivery
       const { code } = await createVerificationRecord(email);
       enqueueVerificationEmailJob(email, fullName, code);
+      // Task 5 Step 2: Soft Gating vs. Hard Gating
+      const gatingMode = (formData.get('gatingMode') as string) || 'hard';
+      if (gatingMode === 'soft') {
+        const existing = await prisma.user.findUnique({
+          where: { authUserId: data.user.id },
+        });
+        if (existing) {
+          await createSession(existing.id, {
+            ipAddress: clientIp,
+            userAgent: headerList.get('user-agent') || undefined,
+          });
+        }
+        return {
+          success: true,
+          softGated: true,
+          redirect: '/dashboard?softGated=true',
+          email,
+          message: 'Account created! Signed in immediately via Soft Gating.',
+        };
+      }
     }
 
     return {

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/auth/server';
+import { getCurrentUser } from '@/lib/auth/session';
 import { prisma } from '@/lib/prisma';
 import { logout } from '@/lib/auth/actions';
-import DeletionClient from './DeletionClient';
+import SecurityClient from './SecurityClient';
 
 export const metadata: Metadata = {
   title: 'Dashboard — Workn',
@@ -13,20 +14,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: { softGated?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  const sessionUser = await getCurrentUser();
+
+  if (!user && !sessionUser) {
     redirect('/auth?view=login');
   }
 
   // Load application-tier user profile from PostgreSQL
-  const appUser = await prisma.user.findUnique({
+  const appUser = sessionUser || (user ? await prisma.user.findUnique({
     where: { authUserId: user.id },
-  });
+  }) : null);
+
+  const displayEmail = user?.email || appUser?.email || 'member@workn.ng';
 
   // TASK 5 STEP 6 (Evidence 12): Account Deletion Lockout View
   // If the account has been scheduled for deletion, render the authoritative statutory lockout screen!
@@ -227,7 +236,7 @@ export default async function DashboardPage() {
             className="type-body-medium"
             style={{ color: 'var(--color-on-surface-variant)' }}
           >
-            {user.email}
+            {displayEmail}
           </span>
           <form action={logout}>
             <button
@@ -267,6 +276,33 @@ export default async function DashboardPage() {
         <h1 className="type-headline-large" style={{ color: 'var(--color-on-surface)' }}>
           Member Dashboard
         </h1>
+
+        {searchParams?.softGated === 'true' && (
+          <div
+            role="alert"
+            style={{
+              maxWidth: '640px',
+              width: '100%',
+              marginBottom: 'var(--space-2)',
+              padding: 'var(--space-3) var(--space-4)',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: '#fef3c7',
+              border: '1px solid #f59e0b',
+              color: '#92400e',
+              fontFamily: 'var(--type-body-medium-font-family)',
+              fontSize: 'var(--type-body-medium-font-size)',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+            }}
+          >
+            <span style={{ fontSize: '20px' }}>⚠️</span>
+            <div>
+              <strong>Soft Gating Active (Zero-Wait Onboarding):</strong> Your account was created and logged in immediately without upfront email verification. Booking and payment privileges remain restricted until your email address is verified.
+            </div>
+          </div>
+        )}
         <p className="type-body-large" style={{ color: 'var(--color-on-surface-variant)', maxWidth: '480px' }}>
           Welcome back! Your membership, bookings, and workspace benefits are active.
         </p>
@@ -282,11 +318,11 @@ export default async function DashboardPage() {
             fontSize: 'var(--type-body-medium-font-size)',
           }}
         >
-          Signed in as <strong>{user.email}</strong>
+          Signed in as <strong>{displayEmail}</strong>
         </div>
 
-        {/* Task 5 Step 6: Account Deletion & Erasure Trigger */}
-        <DeletionClient />
+        {/* Task 5 Step 5 & 6: Security, Password Reset & Account Erasure */}
+        <SecurityClient />
       </section>
     </main>
   );
