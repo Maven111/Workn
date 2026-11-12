@@ -4,10 +4,10 @@ import { createClient } from '@/lib/auth/server';
 import { getCurrentUser } from '@/lib/auth/session';
 import { prisma } from '@/lib/prisma';
 import { logout } from '@/lib/auth/actions';
-import SecurityClient from './SecurityClient';
+import MemberDashboardClient from './MemberDashboardClient';
 
 export const metadata: Metadata = {
-  title: 'Dashboard — Workn',
+  title: 'Member Dashboard — Workn',
   robots: {
     index: false,
     follow: false,
@@ -179,7 +179,75 @@ export default async function DashboardPage({
     );
   }
 
-  // Active Member Dashboard
+  // Fetch Member Relational Data
+  const memberWithData = appUser ? await prisma.user.findUnique({
+    where: { id: appUser.id },
+    include: {
+      memberships: {
+        where: { status: 'ACTIVE' },
+        include: { plan: true },
+        orderBy: { createdAt: 'desc' },
+      },
+      bookings: {
+        include: { resource: true },
+        orderBy: { startAt: 'desc' },
+        take: 15,
+      },
+      payments: {
+        orderBy: { createdAt: 'desc' },
+        take: 15,
+      },
+      benefitLedgers: {
+        orderBy: { createdAt: 'desc' },
+        take: 30,
+      },
+    },
+  }) : null;
+
+  const [resources, plans] = await Promise.all([
+    prisma.workspaceResource.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.membershipPlan.findMany({
+      where: { isActive: true },
+      orderBy: { price: 'asc' },
+    }),
+  ]);
+
+  // Calculate Benefit Balances
+  const daysLedger = await prisma.benefitLedger.aggregate({
+    where: { memberId: appUser?.id || '', benefitType: 'COWORKING_DAYS' },
+    _sum: { amount: true },
+  });
+  const roomLedger = await prisma.benefitLedger.aggregate({
+    where: { memberId: appUser?.id || '', benefitType: 'MEETING_ROOM_HOURS' },
+    _sum: { amount: true },
+  });
+
+  const remainingDays = Math.max(0, Number(daysLedger._sum.amount || 0));
+  const remainingHours = Math.max(0, Number(roomLedger._sum.amount || 0));
+
+  const activeMembership = memberWithData?.memberships[0] ? {
+    id: memberWithData.memberships[0].id,
+    status: memberWithData.memberships[0].status,
+    startAt: memberWithData.memberships[0].startAt.toISOString(),
+    expiresAt: memberWithData.memberships[0].expiresAt.toISOString(),
+    purchasePrice: Number(memberWithData.memberships[0].purchasePrice),
+    plan: {
+      id: memberWithData.memberships[0].plan.id,
+      name: memberWithData.memberships[0].plan.name,
+      description: memberWithData.memberships[0].plan.description,
+      price: Number(memberWithData.memberships[0].plan.price),
+      currency: memberWithData.memberships[0].plan.currency,
+      billingPeriod: memberWithData.memberships[0].plan.billingPeriod,
+      coworkingDayAllowance: memberWithData.memberships[0].plan.coworkingDayAllowance,
+      meetingRoomHourAllowance: memberWithData.memberships[0].plan.meetingRoomHourAllowance
+        ? Number(memberWithData.memberships[0].plan.meetingRoomHourAllowance)
+        : null,
+    },
+  } : null;
+
   return (
     <main
       style={{
@@ -189,12 +257,12 @@ export default async function DashboardPage({
         flexDirection: 'column',
       }}
     >
-      {/* Top Nav */}
+      {/* Top Navigation */}
       <header
         style={{
           borderBottom: '1px solid var(--color-outline-variant)',
           backgroundColor: 'var(--color-surface-container-lowest)',
-          padding: 'var(--space-4) var(--space-6)',
+          padding: 'var(--space-3) var(--space-6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -229,12 +297,15 @@ export default async function DashboardPage({
           >
             Workn
           </span>
+          <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginLeft: 'var(--space-2)' }}>
+            Lagos Workspace Hub
+          </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <span
             className="type-body-medium"
-            style={{ color: 'var(--color-on-surface-variant)' }}
+            style={{ color: 'var(--color-on-surface-variant)', fontSize: '13px' }}
           >
             {displayEmail}
           </span>
@@ -261,69 +332,72 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      {/* Main Content */}
-      <section
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: 'var(--space-10) var(--space-6)',
-          textAlign: 'center',
-          gap: 'var(--space-4)',
+      {/* Main Dynamic Member Dashboard */}
+      <MemberDashboardClient
+        user={{
+          id: appUser?.id || '',
+          fullName: appUser?.fullName || 'Valued Member',
+          email: displayEmail,
+          taxId: appUser?.taxId || 'NIG-TAX-MEMBER',
+          phone: appUser?.phone || null,
+          role: appUser?.role || 'MEMBER',
+          accountStatus: appUser?.accountStatus || 'ACTIVE',
+          createdAt: appUser?.createdAt?.toISOString() || new Date().toISOString(),
         }}
-      >
-        <h1 className="type-headline-large" style={{ color: 'var(--color-on-surface)' }}>
-          Member Dashboard
-        </h1>
-
-        {searchParams?.softGated === 'true' && (
-          <div
-            role="alert"
-            style={{
-              maxWidth: '640px',
-              width: '100%',
-              marginBottom: 'var(--space-2)',
-              padding: 'var(--space-3) var(--space-4)',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: '#fef3c7',
-              border: '1px solid #f59e0b',
-              color: '#92400e',
-              fontFamily: 'var(--type-body-medium-font-family)',
-              fontSize: 'var(--type-body-medium-font-size)',
-              textAlign: 'left',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--space-3)',
-            }}
-          >
-            <span style={{ fontSize: '20px' }}>⚠️</span>
-            <div>
-              <strong>Soft Gating Active (Zero-Wait Onboarding):</strong> Your account was created and logged in immediately without upfront email verification. Booking and payment privileges remain restricted until your email address is verified.
-            </div>
-          </div>
-        )}
-        <p className="type-body-large" style={{ color: 'var(--color-on-surface-variant)', maxWidth: '480px' }}>
-          Welcome back! Your membership, bookings, and workspace benefits are active.
-        </p>
-
-        <div
-          style={{
-            marginTop: 'var(--space-2)',
-            padding: 'var(--space-3) var(--space-6)',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'var(--color-primary-container)',
-            color: 'var(--color-on-primary-container)',
-            fontFamily: 'var(--type-body-medium-font-family)',
-            fontSize: 'var(--type-body-medium-font-size)',
-          }}
-        >
-          Signed in as <strong>{displayEmail}</strong>
-        </div>
-
-        {/* Task 5 Step 5 & 6: Security, Password Reset & Account Erasure */}
-        <SecurityClient />
-      </section>
+        activeMembership={activeMembership}
+        remainingDays={remainingDays}
+        remainingHours={remainingHours}
+        resources={resources.map((r) => ({
+          id: r.id,
+          name: r.name,
+          type: r.type,
+          capacity: r.capacity,
+          rate: Number(r.rate || 0),
+          currency: r.currency || 'NGN',
+          isActive: r.isActive,
+          operatingAvailability: r.operatingAvailability,
+        }))}
+        plans={plans.map((p) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          price: Number(p.price),
+          currency: p.currency,
+          billingPeriod: p.billingPeriod,
+          coworkingDayAllowance: p.coworkingDayAllowance,
+          meetingRoomHourAllowance: p.meetingRoomHourAllowance ? Number(p.meetingRoomHourAllowance) : null,
+        }))}
+        bookings={(memberWithData?.bookings || []).map((b) => ({
+          id: b.id,
+          startAt: b.startAt.toISOString(),
+          endAt: b.endAt.toISOString(),
+          status: b.status,
+          totalCharge: Number(b.totalCharge),
+          currency: b.currency || 'NGN',
+          resource: {
+            id: b.resource.id,
+            name: b.resource.name,
+            type: b.resource.type,
+          },
+        }))}
+        payments={(memberWithData?.payments || []).map((p) => ({
+          id: p.id,
+          amount: Number(p.amount),
+          currency: p.currency,
+          paymentReference: p.paymentReference,
+          provider: p.provider,
+          status: p.status,
+          createdAt: p.createdAt.toISOString(),
+        }))}
+        benefitLedgers={(memberWithData?.benefitLedgers || []).map((l) => ({
+          id: l.id,
+          benefitType: l.benefitType,
+          amount: Number(l.amount),
+          reason: l.reason,
+          createdAt: l.createdAt.toISOString(),
+        }))}
+        softGated={searchParams?.softGated === 'true'}
+      />
     </main>
   );
 }
