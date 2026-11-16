@@ -89,9 +89,32 @@ export async function login(formData: FormData) {
 
     // Ensure member record exists in Prisma and enforce Hard Gating
     if (data?.user) {
-      let existing = await prisma.user.findUnique({
-        where: { authUserId: data.user.id },
-      });
+      let existing: Awaited<ReturnType<typeof prisma.user.findUnique>> = null;
+
+      // Retry up to 3 times with connection reset recovery on stale pool sockets
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          existing = await prisma.user.findUnique({
+            where: { authUserId: data.user.id },
+          });
+          break;
+        } catch (dbErr: unknown) {
+          const errMsg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+          if (
+            attempt < 3 &&
+            (errMsg.includes("Can't reach database server") ||
+              errMsg.includes('ConnectionReset') ||
+              errMsg.includes('10054') ||
+              errMsg.includes('Closed'))
+          ) {
+            console.warn(`[Prisma] Stale database socket detected on login (attempt ${attempt}). Reconnecting...`);
+            await prisma.$disconnect().catch(() => {});
+            await new Promise((r) => setTimeout(r, 800));
+            continue;
+          }
+          throw dbErr;
+        }
+      }
 
       if (!existing) {
         const metadata = (data.user.user_metadata || {}) as Record<string, unknown>;
